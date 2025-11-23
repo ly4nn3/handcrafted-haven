@@ -1,0 +1,13 @@
+.main {
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.link {
+  color: var(--ou-crimson);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--aquamarine);
+}

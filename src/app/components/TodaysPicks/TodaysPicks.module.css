@@ -1,0 +1,25 @@
+.todaysPicks {
+  padding: 2rem 1rem;
+  background-color: var(--bg-white);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.productCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-color: var(--french-gray);
+  border-radius: 0.5rem;
+}

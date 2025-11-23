@@ -1,33 +1,46 @@
+/* --------------
+  Root variables 
+----------------*/
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --white: #ffffff;
+  --french-gray: #b6bac9;
+  --aquamarine: #70f8ba;
+  --night: #000f08;
+  --ou-crimson: #860912;
+
+  --bp-sm: 480px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* --------------
+  Base styles 
+----------------*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
 }
 
 html,
 body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
   margin: 0;
+  padding: 0;
+  font-family: "Open Sans", sans-serif;
+  color: var(--night);
+  background-color: var(--white);
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
 }
 
 a {
@@ -35,8 +48,65 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+
+/* -------------------------
+  Utility / Contrast classes
+---------------------------*/
+
+/* White / French Gray / Aquamarine on Night */
+.bg-night {
+  background-color: var(--night);
+  color: var(--white);
+}
+
+.text-french-gray {
+  color: var(--french-gray);
+}
+
+.text-aquamarine {
+  color: var(--aquamarine);
+}
+
+/* White / Aquamarine on OU Crimson */
+.bg-ou-crimson {
+  background-color: var(--ou-crimson);
+  color: var(--white);
+}
+
+.text-ou-crimson {
+  color: var(--ou-crimson);
+}
+
+.text-white {
+  color: var(--white);
+}
+
+.text-night {
+  color: var(--night);
+}
+
+.bg-white {
+  background-color: var(--white);
+}
+
+/* -------------------------
+  Global container
+---------------------------*/
+.container {
+  width: 90%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 95%;
+    padding: 0 0.5rem;
   }
 }
