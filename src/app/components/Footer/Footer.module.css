@@ -1,0 +1,19 @@
+.footer {
+  background-color: var(--night);
+  color: var(--white);
+  padding: 2rem 0;
+  text-align: center;
+  font-size: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.link {
+  color: var(--aquamarine);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--white);
+}
