@@ -1,18 +1,17 @@
-import { compare } from "bcryptjs";
-import User, { IUser } from "../models/User";
+import User from "../models/User";
 import { hashPassword, comparePassword } from "../utils/hash";
 
-export const registerUser = async (userData: {
+export const registerUser = async (data: {
   firstname: string;
   lastname: string;
   email: string;
   password: string;
 }) => {
-  const { firstname, lastname, email, password } = userData;
+  const { firstname, lastname, email, password } = data;
 
   const passwordHash = await hashPassword(password);
 
-  const user: IUser = new User({
+  const user = new User({
     firstname,
     lastname,
     email,
@@ -24,15 +23,14 @@ export const registerUser = async (userData: {
   return user;
 };
 
-// Login user
 export const loginUser = async (data: { email: string; password: string }) => {
   const { email, password } = data;
 
   const user = await User.findOne({ email });
   if (!user) throw new Error("User not found");
 
-  const isMatch = await comparePassword(password, user.passwordHash);
-  if (!isMatch) throw new Error("Invalid credentials");
+  const valid = await comparePassword(password, user.passwordHash);
+  if (!valid) throw new Error("Invalid credentials");
 
   return user;
 };

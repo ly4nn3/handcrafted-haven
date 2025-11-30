@@ -1,5 +1,5 @@
-import Product, { IProduct } from "../models/Product";
-import Seller from "../models/Seller";
+import Product, { IProduct } from "@backend/models/Product";
+import Seller from "@backend/models/Seller";
 
 export const addProduct = async (data: {
   sellerId: string;
