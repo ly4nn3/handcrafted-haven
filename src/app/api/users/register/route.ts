@@ -9,7 +9,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const user = await registerUser(body);
 
-    return NextResponse.json({ success: true, user }, { status: 201 });
+    return NextResponse.json(
+      { success: true, userId: user._id, role: "user" },
+      { status: 201 }
+    );
   } catch (error: any) {
     return NextResponse.json(
       { success: false, message: error.message },

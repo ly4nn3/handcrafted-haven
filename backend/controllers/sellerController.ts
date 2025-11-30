@@ -1,4 +1,4 @@
-import Seller, { ISeller } from "../models/Seller";
+import Seller from "../models/Seller";
 import User from "../models/User";
 
 export const registerSeller = async (data: {
@@ -11,7 +11,7 @@ export const registerSeller = async (data: {
   const user = await User.findById(userId);
   if (!user) throw new Error("User not found");
 
-  const seller: ISeller = new Seller({
+  const seller = new Seller({
     userId,
     shopName,
     description,
@@ -19,5 +19,6 @@ export const registerSeller = async (data: {
   });
 
   await seller.save();
+
   return seller;
 };

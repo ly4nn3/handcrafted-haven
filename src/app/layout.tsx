@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import NavBar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import { Amarante, Lato, Open_Sans } from "next/font/google";
+import { UserProvider } from "./context/UserContext";
 
 const amarante = Amarante({
   subsets: ["latin"],
@@ -45,9 +46,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       className={`${amarante.variable} ${lato.variable} ${openSans.variable}`}
     >
       <body className={openSans.className}>
-        <NavBar />
-        <main>{children}</main>
-        <Footer />
+        <UserProvider>
+          <NavBar />
+          <main>{children}</main>
+          <Footer />
+        </UserProvider>
       </body>
     </html>
   );
