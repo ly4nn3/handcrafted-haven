@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -10,7 +10,7 @@ import { useUser } from "@/app/context/UserContext";
 export default function NavBar() {
   const { user, logout: contextLogout } = useUser();
   const [isOpen, setIsOpen] = useState(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -18,7 +18,7 @@ export default function NavBar() {
 
   const logout = () => {
     contextLogout();
-    setIsUserMenuOpen(false);
+    setIsDropdownOpen(false);
     setIsOpen(false);
     router.push("/");
   };
@@ -29,7 +29,7 @@ export default function NavBar() {
     { name: "Contact", href: "/contact" },
   ];
 
-  const theme = "light"; // Placeholder for dynamic theme
+  const theme = "light"; // placeholder
   const logoSrc =
     theme === "light"
       ? "/assets/logo/on-light.svg"
@@ -37,6 +37,7 @@ export default function NavBar() {
 
   return (
     <header className={styles.navbar}>
+      {/* Brand */}
       <div className={styles.logo}>
         <Link href="/">
           <Image
@@ -51,7 +52,7 @@ export default function NavBar() {
         </Link>
       </div>
 
-      {/* Desktop Nav */}
+      {/* Desktop Navigation */}
       <nav className={styles.navLinks}>
         {navLinks.map((link) => (
           <Link
@@ -64,6 +65,7 @@ export default function NavBar() {
         ))}
       </nav>
 
+      {/* User Section */}
       <div className={styles.userSection}>
         {/* Cart Icon */}
         <button className={styles.iconButton}>
@@ -78,20 +80,21 @@ export default function NavBar() {
           </svg>
         </button>
 
-        {/* Login button if not logged in */}
+        {/* Not logged in → Login */}
         {!user && (
           <Link href="/auth/login" className={styles.cta}>
             Login
           </Link>
         )}
 
-        {/* User menu if logged in */}
+        {/* Logged-in user → dropdown for Dashboard/Profile + Logout */}
         {user && (
-          <div className={styles.userMenuWrapper}>
-            <button
-              onClick={() => setIsUserMenuOpen((prev) => !prev)}
-              className={styles.userButton}
-            >
+          <div
+            className={styles.userDropdownWrapper}
+            onMouseEnter={() => setIsDropdownOpen(true)}
+            onMouseLeave={() => setIsDropdownOpen(false)}
+          >
+            <button className={styles.userButton}>
               <span className={styles.userIcon}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -106,14 +109,22 @@ export default function NavBar() {
               <span>{user.firstname}</span>
             </button>
 
-            {isUserMenuOpen && (
-              <div className={styles.userDropdown}>
-                <Link href="/profile">Profile</Link>
-                {user.role === "seller" && (
-                  <Link href="/seller/dashboard">Seller Dashboard</Link>
-                )}
-                <Link href="/settings">Settings</Link>
-                <button onClick={logout}>Logout</button>
+            {/* Dropdown */}
+            {isDropdownOpen && (
+              <div className={styles.userDropdownContent}>
+                <Link
+                  href={
+                    user.role === "seller"
+                      ? "/dashboard/seller"
+                      : "/dashboard/user"
+                  }
+                  className={styles.userDropdownButton}
+                >
+                  {user.role === "seller" ? "Dashboard" : "Profile"}
+                </Link>
+                <button onClick={logout} className={styles.userDropdownButton}>
+                  Logout
+                </button>
               </div>
             )}
           </div>
@@ -155,16 +166,15 @@ export default function NavBar() {
 
           {user && (
             <>
-              <Link href="/profile" className={styles.cta}>
-                Profile
-              </Link>
-              {user.role === "seller" && (
-                <Link href="/seller/dashboard" className={styles.cta}>
-                  Seller Dashboard
-                </Link>
-              )}
-              <Link href="/settings" className={styles.cta}>
-                Settings
+              <Link
+                href={
+                  user.role === "seller"
+                    ? "/dashboard/seller"
+                    : "/dashboard/user"
+                }
+                className={styles.cta}
+              >
+                {user.role === "seller" ? "Dashboard" : "Profile"}
               </Link>
               <button onClick={logout} className={styles.cta}>
                 Logout

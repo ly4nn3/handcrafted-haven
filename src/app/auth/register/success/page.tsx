@@ -3,11 +3,15 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import styles from "@/app/auth/register/Register.module.css";
 
-export default function ResgisterSuccessPage() {
+export default function RegisterSuccessPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const role = searchParams.get("role") || "user";
+
+  const handleRedirect = () => {
+    router.push(role === "seller" ? "/dashboard/seller" : "/dashboard/user");
+  };
 
   return (
     <div className={styles.registerContainer}>
@@ -15,9 +19,9 @@ export default function ResgisterSuccessPage() {
 
       {role === "seller" ? (
         <p className={styles.successMessage}>
-          Your seller account has been created!
+          You're now a seller on Handcrafted Haven!
           <br />
-          Log in and start setting up your shop.
+          Start setting up your shop and sell your products.
         </p>
       ) : (
         <p className={styles.successMessage}>
@@ -27,11 +31,8 @@ export default function ResgisterSuccessPage() {
         </p>
       )}
 
-      <button
-        onClick={() => router.push("/auth/login")}
-        className={styles.successButton}
-      >
-        Go to Login
+      <button onClick={handleRedirect} className={styles.successButton}>
+        Go to Dashboard
       </button>
     </div>
   );

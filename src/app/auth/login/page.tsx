@@ -7,8 +7,8 @@ import styles from "./Login.module.css";
 import { useUser } from "@/app/context/UserContext";
 
 export default function LoginPage() {
-  const { login } = useUser();
   const router = useRouter();
+  const { login } = useUser();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,7 +16,7 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const res = await fetch("/api/users/login", {
+    const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -30,12 +30,12 @@ export default function LoginPage() {
     }
 
     login({
-      userId: data.userId,
-      firstname: data.firstname,
-      role: data.role,
+      userId: data.user.id,
+      firstname: data.user.firstname,
+      role: data.user.role,
     });
 
-    if (data.role === "seller") {
+    if (data.user.role === "seller") {
       router.push("/dashboard/seller");
     } else {
       router.push("/");
@@ -54,7 +54,6 @@ export default function LoginPage() {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-
         <input
           type="password"
           placeholder="Password"
