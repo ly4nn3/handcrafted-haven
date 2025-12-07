@@ -34,19 +34,25 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("user");
+    const stored = localStorage.getItem("user");
 
     if (stored) setUser(JSON.parse(stored));
   }, []);
 
   const login = (userData: User) => {
     setUser(userData);
-    sessionStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("user", JSON.stringify(userData));
+
+    if (userData.role === "seller") {
+      router.push("/dashboard/seller");
+    } else {
+      router.push("/dashboard/user");
+    }
   };
 
   const logout = () => {
     setUser(null);
-    sessionStorage.removeItem("user");
+    localStorage.removeItem("user");
     router.push("/");
   };
 

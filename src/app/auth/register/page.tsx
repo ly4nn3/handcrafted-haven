@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "./Register.module.css";
+import { useUser } from "@/app/context/UserContext";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { login } = useUser(); // optional: auto-login after registration
 
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
@@ -19,10 +21,7 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const endpoint =
-      role === "seller" ? "/api/sellers/register" : "/api/users/register";
-
-    const res = await fetch(endpoint, {
+    const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -30,17 +29,26 @@ export default function RegisterPage() {
         lastname,
         email,
         password,
+        role,
         ...(role === "seller" && { shopName, description }),
       }),
     });
 
     const data = await res.json();
 
-    if (data.success) {
-      router.push(`/auth/register/success?role=${role}`);
-    } else {
+    if (!data.success) {
       alert(data.message);
+      return;
     }
+
+    // Optional: auto-login user context
+    login({
+      userId: data.user.id,
+      firstname: data.user.firstname,
+      role: data.user.role,
+    });
+
+    router.push(`/auth/register/success?role=${role}`);
   };
 
   return (
@@ -60,7 +68,6 @@ export default function RegisterPage() {
           onChange={(e) => setLastname(e.target.value)}
           required
         />
-
         <input
           type="email"
           placeholder="Email"
@@ -68,7 +75,6 @@ export default function RegisterPage() {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-
         <input
           type="password"
           placeholder="Password"
@@ -87,7 +93,6 @@ export default function RegisterPage() {
             />{" "}
             User
           </label>
-
           <label>
             <input
               type="radio"
@@ -107,7 +112,6 @@ export default function RegisterPage() {
               onChange={(e) => setShopName(e.target.value)}
               required
             />
-
             <input
               placeholder="Description"
               value={description}
