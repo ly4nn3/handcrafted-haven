@@ -1,126 +1,228 @@
 "use client";
 
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import styles from "./Register.module.css";
 import { useUser } from "@/app/context/UserContext";
+import { AuthService } from "@/lib/api/authService";
+import {
+  validateEmail,
+  validatePassword,
+  validateName,
+} from "@/lib/validation/authValidation";
+import FormField from "@/components/ui/FormField";
+import PasswordField from "@/components/ui/PasswordField";
+import LoadingButton from "@/components/ui/LoadingButton";
+import styles from "./Register.module.css";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { login } = useUser(); // optional: auto-login after registration
+  const { setUser } = useUser();
 
-  const [firstname, setFirstname] = useState("");
-  const [lastname, setLastname] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"user" | "seller">("user");
-  const [shopName, setShopName] = useState("");
-  const [description, setDescription] = useState("");
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    password: "",
+    role: "user" as "user" | "seller",
+    shopName: "",
+    description: "",
+  });
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    password: "",
+    shopName: "",
+  });
+
+  const updateField = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
+  const validateForm = (): boolean => {
+    const errors = {
+      firstname: "",
+      lastname: "",
+      email: "",
+      password: "",
+      shopName: "",
+    };
+
+    const firstnameValidation = validateName(formData.firstname, "First name");
+    if (!firstnameValidation.isValid) {
+      errors.firstname = firstnameValidation.error || "";
+    }
+
+    const lastnameValidation = validateName(formData.lastname, "Last name");
+    if (!lastnameValidation.isValid) {
+      errors.lastname = lastnameValidation.error || "";
+    }
+
+    const emailValidation = validateEmail(formData.email);
+    if (!emailValidation.isValid) {
+      errors.email = emailValidation.error || "";
+    }
+
+    const passwordValidation = validatePassword(formData.password);
+    if (!passwordValidation.isValid) {
+      errors.password = passwordValidation.error || "";
+    }
+
+    if (formData.role === "seller" && !formData.shopName.trim()) {
+      errors.shopName = "Shop name is required for sellers";
+    }
+
+    setFieldErrors(errors);
+
+    return !Object.values(errors).some((error) => error !== "");
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setError(null);
 
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        firstname,
-        lastname,
-        email,
-        password,
-        role,
-        ...(role === "seller" && { shopName, description }),
-      }),
-    });
-
-    const data = await res.json();
-
-    if (!data.success) {
-      alert(data.message);
+    if (!validateForm()) {
       return;
     }
 
-    // Optional: auto-login user context
-    login({
-      userId: data.user.id,
-      firstname: data.user.firstname,
-      role: data.user.role,
-    });
+    setLoading(true);
 
-    router.push(`/auth/register/success?role=${role}`);
+    try {
+      const result = await AuthService.register(formData);
+
+      if (!result.success) {
+        setError(result.error);
+        return;
+      }
+
+      setUser({
+        userId: result.data.user.id,
+        firstname: result.data.user.firstname,
+        lastname: result.data.user.lastname,
+        email: result.data.user.email,
+        role: result.data.user.role,
+      });
+
+      // Redirect to success page
+      router.push(`/auth/register/success?role=${formData.role}`);
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className={styles.registerContainer}>
       <h2>Register</h2>
 
-      <form onSubmit={handleRegister} className={styles.registerForm}>
-        <input
-          placeholder="First Name"
-          value={firstname}
-          onChange={(e) => setFirstname(e.target.value)}
+      {error && (
+        <div className={styles.errorBanner} role="alert">
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className={styles.registerForm} noValidate>
+        <FormField
+          label="First Name"
+          value={formData.firstname}
+          onChange={(val) => updateField("firstname", val)}
+          error={fieldErrors.firstname}
+          placeholder="John"
           required
+          disabled={loading}
         />
-        <input
-          placeholder="Last Name"
-          value={lastname}
-          onChange={(e) => setLastname(e.target.value)}
+
+        <FormField
+          label="Last Name"
+          value={formData.lastname}
+          onChange={(val) => updateField("lastname", val)}
+          error={fieldErrors.lastname}
+          placeholder="Doe"
           required
+          disabled={loading}
         />
-        <input
+
+        <FormField
+          label="Email"
           type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={formData.email}
+          onChange={(val) => updateField("email", val)}
+          error={fieldErrors.email}
+          placeholder="your@email.com"
           required
+          disabled={loading}
         />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+
+        <PasswordField
+          label="Password"
+          value={formData.password}
+          onChange={(val) => updateField("password", val)}
+          error={fieldErrors.password}
+          showStrength
           required
+          disabled={loading}
         />
 
         <div className={styles.roleOptions}>
-          <label>
+          <label className={styles.roleLabel}>
             <input
               type="radio"
               name="role"
-              checked={role === "user"}
-              onChange={() => setRole("user")}
-            />{" "}
-            User
+              checked={formData.role === "user"}
+              onChange={() => updateField("role", "user")}
+              disabled={loading}
+            />
+            <span>User - Browse and buy products</span>
           </label>
-          <label>
+          <label className={styles.roleLabel}>
             <input
               type="radio"
               name="role"
-              checked={role === "seller"}
-              onChange={() => setRole("seller")}
-            />{" "}
-            Seller
+              checked={formData.role === "seller"}
+              onChange={() => updateField("role", "seller")}
+              disabled={loading}
+            />
+            <span>Seller - Create and sell products</span>
           </label>
         </div>
 
-        {role === "seller" && (
-          <>
-            <input
-              placeholder="Shop Name"
-              value={shopName}
-              onChange={(e) => setShopName(e.target.value)}
+        {formData.role === "seller" && (
+          <div className={styles.sellerFields}>
+            <FormField
+              label="Shop Name"
+              value={formData.shopName}
+              onChange={(val) => updateField("shopName", val)}
+              error={fieldErrors.shopName}
+              placeholder="My Awesome Shop"
               required
+              disabled={loading}
             />
-            <input
-              placeholder="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </>
+
+            <div className={styles.formField}>
+              <label className={styles.label}>
+                Description <span className={styles.optional}>(Optional)</span>
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => updateField("description", e.target.value)}
+                placeholder="Tell customers about your shop..."
+                className={styles.textarea}
+                rows={4}
+                disabled={loading}
+              />
+            </div>
+          </div>
         )}
 
-        <button type="submit">Register</button>
+        <LoadingButton type="submit" loading={loading} disabled={loading}>
+          Create Account
+        </LoadingButton>
       </form>
 
       <p className={styles.bottomText}>

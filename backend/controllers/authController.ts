@@ -1,7 +1,7 @@
-import User from "../models/User";
-import Seller from "../models/Seller";
-import { hashPassword, comparePassword } from "../utils/hash";
-import { signJWT } from "../utils/jwt";
+import User from "@backend/models/User";
+import Seller from "@backend/models/Seller";
+import { hashPassword, comparePassword } from "@backend/utils/hash";
+import { signJWT } from "@backend/utils/jwt";
 
 // ----------------------
 // DTOs
@@ -69,7 +69,9 @@ export const registerUser = async (data: RegisterDTO) => {
 export const loginUser = async (data: LoginDTO) => {
   const { email, password } = data;
 
-  const user = await User.findOne({ email: email.toLowerCase() });
+  const user = await User.findOne({ email: email.toLowerCase() }).select(
+    "+passwordHash"
+  );
   if (!user) throw new Error("User not found");
 
   const valid = await comparePassword(password, user.passwordHash);

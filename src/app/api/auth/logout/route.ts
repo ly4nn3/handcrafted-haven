@@ -1,13 +1,8 @@
 import { NextResponse } from "next/server";
+import { successResponse, clearAuthCookie } from "@backend/utils/apiResponse";
 
-export async function POST() {
-  const response = NextResponse.json({ success: true, message: "Logged out" });
-  response.cookies.set({
-    name: "token",
-    value: "",
-    path: "/",
-    maxAge: 0, // expire immediately
-  });
-
+export async function POST(): Promise<NextResponse> {
+  const response = successResponse(null, "Logged out successfully");
+  clearAuthCookie(response);
   return response;
 }

@@ -1,35 +1,45 @@
 "use client";
 
 import { useState } from "react";
-import DashboardTabs from "@/app/components/Dashboard";
+import DashboardTabs from "@/components/Dashboard/DashboardTabs";
+import ProfileTab from "@/components/Dashboard/ProfileTab";
 
 export default function SellerDashboardPage() {
   const [activeTab, setActiveTab] = useState("Profile");
 
-  const sellerTabs = [
-    "Profile",
-    "Products",
-    "Statistics",
-    "Purchases",
-    "Reviews",
-  ];
+  const tabs = ["Profile", "Products", "Statistics", "Purchases", "Reviews"];
 
   return (
-    <div>
-      <h1>Seller Dashboard</h1>
-      <DashboardTabs
-        tabs={sellerTabs}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-      />
-
-      <div style={{ marginTop: "2rem" }}>
-        {activeTab === "Profile" && <p>Account settings & profile info.</p>}
-        {activeTab === "Products" && <p>Manage your products here.</p>}
-        {activeTab === "Statistics" && <p>Sales & store statistics.</p>}
-        {activeTab === "Purchases" && <p>Past purchases as a user.</p>}
-        {activeTab === "Reviews" && <p>Product reviews you wrote.</p>}
-      </div>
-    </div>
+    <DashboardTabs
+      tabs={tabs}
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+    >
+      {activeTab === "Profile" && <ProfileTab type="seller" />}
+      {activeTab === "Products" && (
+        <div style={{ padding: "2rem" }}>
+          <h2>Manage Products</h2>
+          <p>Product management coming soon...</p>
+        </div>
+      )}
+      {activeTab === "Statistics" && (
+        <div style={{ padding: "2rem" }}>
+          <h2>Sales Statistics</h2>
+          <p>Analytics dashboard coming soon...</p>
+        </div>
+      )}
+      {activeTab === "Purchases" && (
+        <div style={{ padding: "2rem" }}>
+          <h2>Purchase History</h2>
+          <p>Order history coming soon...</p>
+        </div>
+      )}
+      {activeTab === "Reviews" && (
+        <div style={{ padding: "2rem" }}>
+          <h2>Reviews</h2>
+          <p>Customer reviews coming soon...</p>
+        </div>
+      )}
+    </DashboardTabs>
   );
 }

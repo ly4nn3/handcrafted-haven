@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema, Model, Query } from "mongoose";
+import mongoose, { Document, Schema, Model } from "mongoose";
 import { IUser } from "./User";
 
 export interface ISeller extends Document {
@@ -24,12 +24,15 @@ const sellerSchema: Schema<ISeller> = new Schema(
     bannerImage: { type: String, default: "" },
     products: [{ type: Schema.Types.ObjectId, ref: "Product", default: [] }],
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
 
-sellerSchema.pre<Query<ISeller, ISeller>>(/^find/, function () {
-  this.populate("userId", "firstname lastname email role");
-});
+sellerSchema.index({ userId: 1 });
+sellerSchema.index({ shopName: 1 });
 
 const Seller: Model<ISeller> =
   mongoose.models.Seller || mongoose.model("Seller", sellerSchema);

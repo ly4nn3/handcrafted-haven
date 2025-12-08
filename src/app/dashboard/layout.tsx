@@ -1,11 +1,15 @@
+"use client";
+
 import { ReactNode } from "react";
-import DashboardTabs from "@/app/components/Dashboard";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import styles from "./DashboardLayout.module.css";
 
-interface DashboardLayoutProps {
-  children: ReactNode;
-}
-
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  return <div className={styles.dashboardContent}>{children}</div>;
+export default function DashboardLayout({ children }: { children: ReactNode }) {
+  return (
+    <ProtectedRoute>
+      <div className={styles.dashboardLayout}>
+        <div className={styles.dashboardContainer}>{children}</div>
+      </div>
+    </ProtectedRoute>
+  );
 }

@@ -1,44 +1,80 @@
 "use client";
 
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import styles from "./Login.module.css";
 import { useUser } from "@/app/context/UserContext";
+import { AuthService } from "@/lib/api/authService";
+import {
+  validateEmail,
+  validatePassword,
+} from "@/lib/validation/authValidation";
+import FormField from "@/components/ui/FormField";
+import PasswordField from "@/components/ui/PasswordField";
+import LoadingButton from "@/components/ui/LoadingButton";
+import styles from "./Login.module.css";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useUser();
+  const { setUser } = useUser();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  // Field-level errors
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setEmailError("");
+    setPasswordError("");
 
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    // Client-side validation
+    const emailValidation = validateEmail(email);
+    const passwordValidation = validatePassword(password);
 
-    const data = await res.json();
-
-    if (!data.success) {
-      alert(data.message);
+    if (!emailValidation.isValid) {
+      setEmailError(emailValidation.error || "");
       return;
     }
 
-    login({
-      userId: data.user.id,
-      firstname: data.user.firstname,
-      role: data.user.role,
-    });
+    if (!passwordValidation.isValid) {
+      setPasswordError(passwordValidation.error || "");
+      return;
+    }
 
-    if (data.user.role === "seller") {
-      router.push("/dashboard/seller");
-    } else {
-      router.push("/");
+    setLoading(true);
+
+    try {
+      const result = await AuthService.login(email, password);
+
+      if (!result.success) {
+        setError(result.error);
+        return;
+      }
+
+      setUser({
+        userId: result.data.user.id,
+        firstname: result.data.user.firstname,
+        lastname: result.data.user.lastname,
+        email: result.data.user.email,
+        role: result.data.user.role,
+      });
+
+      // Redirect based on role
+      if (result.data.user.role === "seller") {
+        router.push("/dashboard/seller");
+      } else {
+        router.push("/dashboard/user");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,23 +82,36 @@ export default function LoginPage() {
     <div className={styles.loginContainer}>
       <h1>Login</h1>
 
-      <form onSubmit={handleLogin} className={styles.loginForm}>
-        <input
+      {error && (
+        <div className={styles.errorBanner} role="alert">
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className={styles.loginForm} noValidate>
+        <FormField
+          label="Email"
           type="email"
-          placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={setEmail}
+          error={emailError}
+          placeholder="your@email.com"
           required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          disabled={loading}
         />
 
-        <button type="submit">Login</button>
+        <PasswordField
+          label="Password"
+          value={password}
+          onChange={setPassword}
+          error={passwordError}
+          required
+          disabled={loading}
+        />
+
+        <LoadingButton type="submit" loading={loading} disabled={loading}>
+          Login
+        </LoadingButton>
       </form>
 
       <p className={styles.bottomText}>
