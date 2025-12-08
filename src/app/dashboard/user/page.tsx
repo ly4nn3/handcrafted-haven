@@ -1,27 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import DashboardTabs from "@/app/components/Dashboard";
+import DashboardTabs from "@/components/Dashboard/DashboardTabs";
+import ProfileTab from "@/components/Dashboard/ProfileTab";
 
 export default function UserDashboardPage() {
   const [activeTab, setActiveTab] = useState("Profile");
 
-  const userTabs = ["Profile", "Purchases", "Reviews"];
+  const tabs = ["Profile", "Purchases", "Reviews"];
 
   return (
-    <div>
-      <h1>User Dashboard</h1>
-      <DashboardTabs
-        tabs={userTabs}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-      />
-
-      <div style={{ marginTop: "2rem" }}>
-        {activeTab === "Profile" && <p>Your profile settings go here.</p>}
-        {activeTab === "Purchases" && <p>Past purchases list goes here.</p>}
-        {activeTab === "Reviews" && <p>Your product reviews go here.</p>}
-      </div>
-    </div>
+    <DashboardTabs
+      tabs={tabs}
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+    >
+      {activeTab === "Profile" && <ProfileTab type="user" />}
+      {activeTab === "Purchases" && (
+        <div style={{ padding: "2rem" }}>
+          <h2>My Purchases</h2>
+          <p>Your order history will appear here...</p>
+        </div>
+      )}
+      {activeTab === "Reviews" && (
+        <div style={{ padding: "2rem" }}>
+          <h2>My Reviews</h2>
+          <p>Reviews you've written will appear here...</p>
+        </div>
+      )}
+    </DashboardTabs>
   );
 }

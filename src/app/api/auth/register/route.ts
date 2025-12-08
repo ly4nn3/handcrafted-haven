@@ -1,18 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectToDB } from "@backend/utils/mongo";
 import { registerUser } from "@backend/controllers/authController";
+import { validateRegisterRequest } from "@backend/utils/validation";
+import {
+  successResponse,
+  errorResponse,
+  setAuthCookie,
+} from "@backend/utils/apiResponse";
+import { withDB } from "@backend/middleware/dbConnection";
+import { AuthResponse } from "@backend/types/api.types";
 
-export async function POST(req: NextRequest) {
+async function handleRegister(req: NextRequest): Promise<NextResponse> {
   try {
-    await connectToDB();
-
     const body = await req.json();
-    const { user, seller, token } = await registerUser(body);
 
-    const response = NextResponse.json({
-      success: true,
+    // Validate request body
+    const validatedData = validateRegisterRequest(body);
+
+    // Register user
+    const { user, seller, token } = await registerUser(validatedData);
+
+    const responseData: AuthResponse = {
       user: {
-        id: user._id,
+        id: user._id.toString(),
         firstname: user.firstname,
         lastname: user.lastname,
         email: user.email,
@@ -20,29 +29,21 @@ export async function POST(req: NextRequest) {
       },
       seller: seller
         ? {
-            id: seller._id,
+            id: seller._id.toString(),
             shopName: seller.shopName,
-            description: seller.description,
+            description: seller.description || "",
           }
         : null,
-    });
+    };
 
-    // Set JWT cookie
-    response.cookies.set({
-      name: "token",
-      value: token,
-      httpOnly: true,
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7,
-      sameSite: "strict",
-      secure: process.env.NODE_ENV === "production",
-    });
+    const response = successResponse(responseData, "Registration successful");
+
+    setAuthCookie(response, token);
 
     return response;
-  } catch (error: any) {
-    return NextResponse.json(
-      { success: false, message: error.message || "Registration failed" },
-      { status: 400 }
-    );
+  } catch (error) {
+    return errorResponse(error, "Registration failed");
   }
 }
+
+export const POST = withDB(handleRegister);

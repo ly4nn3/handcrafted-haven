@@ -1,6 +1,6 @@
-import Hero from "@/app/components/Hero";
-import Categories from "@/app/components/Categories";
-import TodaysPicks from "@/app/components/TodaysPicks";
+import Hero from "@/components/Hero";
+import Categories from "@/components/Categories";
+import TodaysPicks from "@/components/TodaysPicks";
 
 export default function HomePage() {
   return (

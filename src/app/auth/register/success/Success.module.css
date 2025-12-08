@@ -1,0 +1,81 @@
+.successContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.successCard {
+  background: white;
+  padding: 3rem 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+}
+
+.successIcon {
+  width: 4rem;
+  height: 4rem;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.title {
+  color: #1f2937;
+  margin-bottom: 1rem;
+  font-size: 1.75rem;
+}
+
+.content {
+  margin: 2rem 0;
+}
+
+.message {
+  font-size: 1.125rem;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.description {
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.nextSteps {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.nextSteps li {
+  padding: 0.75rem 0;
+  color: #4b5563;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.nextSteps li:last-child {
+  border-bottom: none;
+}
+
+.actions {
+  margin-top: 2rem;
+}
+
+.autoRedirect {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: #9ca3af;
+}

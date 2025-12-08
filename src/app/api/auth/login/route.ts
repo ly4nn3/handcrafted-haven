@@ -1,40 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectToDB } from "@backend/utils/mongo";
 import { loginUser } from "@backend/controllers/authController";
+import { validateLoginRequest } from "@backend/utils/validation";
+import {
+  successResponse,
+  errorResponse,
+  setAuthCookie,
+} from "@backend/utils/apiResponse";
+import { withDB } from "@backend/middleware/dbConnection";
+import { AuthResponse } from "@backend/types/api.types";
 
-export async function POST(req: NextRequest) {
+async function handleLogin(req: NextRequest): Promise<NextResponse> {
   try {
-    await connectToDB();
-
     const body = await req.json();
-    const { user, token } = await loginUser(body);
 
-    const response = NextResponse.json({
-      success: true,
+    // Validate request body
+    const validatedData = validateLoginRequest(body);
+
+    // Authenticate user
+    const { user, token } = await loginUser(validatedData);
+
+    const responseData: AuthResponse = {
       user: {
-        id: user._id,
+        id: user._id.toString(),
         firstname: user.firstname,
         lastname: user.lastname,
         email: user.email,
         role: user.role,
       },
-    });
+    };
 
-    response.cookies.set({
-      name: "token",
-      value: token,
-      httpOnly: true,
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      sameSite: "strict",
-      secure: process.env.NODE_ENV === "production",
-    });
+    const response = successResponse(responseData, "Login successful");
+
+    setAuthCookie(response, token);
 
     return response;
-  } catch (error: any) {
-    return NextResponse.json(
-      { success: false, message: error.message || "Login failed" },
-      { status: 400 }
-    );
+  } catch (error) {
+    return errorResponse(error, "Login failed");
   }
 }
+
+export const POST = withDB(handleLogin);

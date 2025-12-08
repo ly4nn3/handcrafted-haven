@@ -6,59 +6,133 @@ import {
   useState,
   useEffect,
   ReactNode,
+  useCallback,
 } from "react";
-import { useRouter } from "next/navigation";
-
-interface User {
-  userId: string;
-  firstname: string;
-  role: "user" | "seller";
-}
+import { UserService } from "@/lib/api/userService";
+import { UserContextData } from "@/types/frontend.types";
 
 interface UserContextType {
-  user: User | null;
-  login: (userData: User) => void;
-  logout: () => void;
+  user: UserContextData | null;
+  setUser: (userData: UserContextData | null) => void;
+  loading: boolean;
+  refreshUser: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType>({
   user: null,
-  login: () => {},
-  logout: () => {},
+  setUser: () => {},
+  loading: true,
+  refreshUser: async () => {},
 });
 
 export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const router = useRouter();
+  const [user, setUserState] = useState<UserContextData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const stored = localStorage.getItem("user");
+  /**
+   * Refresh user from backend session
+   */
+  const refreshUser = useCallback(async () => {
+    setLoading(true);
+    try {
+      const result = await UserService.getMyProfile();
 
-    if (stored) setUser(JSON.parse(stored));
+      if (result.success) {
+        const userData: UserContextData = {
+          userId: result.data.id,
+          firstname: result.data.firstname,
+          lastname: result.data.lastname,
+          email: result.data.email,
+          role: result.data.role,
+        };
+        setUserState(userData);
+        // Sync with localStorage
+        safeSetLocalStorage("user", JSON.stringify(userData));
+      } else {
+        // Session invalid, clear user
+        setUserState(null);
+        safeRemoveLocalStorage("user");
+      }
+    } catch (error) {
+      console.error("Failed to refresh user:", error);
+      setUserState(null);
+      safeRemoveLocalStorage("user");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const login = (userData: User) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
+  /**
+   * Initialize user from localStorage and verify with backend
+   */
+  useEffect(() => {
+    const initUser = async () => {
+      // First try localStorage for immediate UI
+      const stored = safeGetLocalStorage("user");
+      if (stored) {
+        try {
+          const parsedUser = JSON.parse(stored);
+          setUserState(parsedUser);
+        } catch (error) {
+          console.error("Failed to parse stored user:", error);
+        }
+      }
 
-    if (userData.role === "seller") {
-      router.push("/dashboard/seller");
+      // Then verify with backend
+      await refreshUser();
+    };
+
+    initUser();
+  }, [refreshUser]);
+
+  /**
+   * Set user (called after login/register)
+   */
+  const setUser = useCallback((userData: UserContextData | null) => {
+    setUserState(userData);
+    if (userData) {
+      safeSetLocalStorage("user", JSON.stringify(userData));
     } else {
-      router.push("/dashboard/user");
+      safeRemoveLocalStorage("user");
     }
-  };
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-    router.push("/");
-  };
+  }, []);
 
   return (
-    <UserContext.Provider value={{ user, login, logout }}>
+    <UserContext.Provider value={{ user, setUser, loading, refreshUser }}>
       {children}
     </UserContext.Provider>
   );
+};
+
+/**
+ * Safe localStorage operations (handles errors and SSR)
+ */
+const safeGetLocalStorage = (key: string): string | null => {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem(key);
+  } catch (error) {
+    console.error("localStorage.getItem error:", error);
+    return null;
+  }
+};
+
+const safeSetLocalStorage = (key: string, value: string): void => {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(key, value);
+  } catch (error) {
+    console.error("localStorage.setItem error:", error);
+  }
+};
+
+const safeRemoveLocalStorage = (key: string): void => {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(key);
+  } catch (error) {
+    console.error("localStorage.removeItem error:", error);
+  }
 };

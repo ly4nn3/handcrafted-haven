@@ -8,6 +8,7 @@ export interface IUser extends Document {
   role: "user" | "seller";
   createdAt: Date;
   updatedAt: Date;
+  fullName: string;
 }
 
 const userSchema: Schema<IUser> = new Schema(
@@ -21,15 +22,21 @@ const userSchema: Schema<IUser> = new Schema(
       lowercase: true,
       match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
     },
-    passwordHash: { type: String, required: true },
+    passwordHash: { type: String, required: true, select: false },
     role: { type: String, enum: ["user", "seller"], default: "user" },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
 
 userSchema.virtual("fullName").get(function (this: IUser) {
   return `${this.firstname} ${this.lastname}`;
 });
+
+userSchema.index({ email: 1 });
 
 const User: Model<IUser> =
   mongoose.models.User || mongoose.model("User", userSchema);

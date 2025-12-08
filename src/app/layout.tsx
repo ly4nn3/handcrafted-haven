@@ -1,7 +1,7 @@
 import "./globals.css";
 import { ReactNode } from "react";
-import NavBar from "@/app/components/Navbar";
-import Footer from "@/app/components/Footer";
+import NavBar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { Amarante, Lato, Open_Sans } from "next/font/google";
 import { UserProvider } from "./context/UserContext";
 

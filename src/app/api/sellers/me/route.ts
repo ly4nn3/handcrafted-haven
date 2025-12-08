@@ -1,42 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectToDB } from "@backend/utils/mongo";
-import Seller from "@backend/models/Seller";
-import { verifyJWT } from "@backend/utils/jwt";
+import { withRole } from "@backend/middleware/auth";
+import { withDB } from "@backend/middleware/dbConnection";
+import { getMySellerProfile } from "@backend/controllers/sellerController";
+import { successResponse, errorResponse } from "@backend/utils/apiResponse";
+import { DecodedToken } from "@backend/types/auth.types";
+import { SellerResponse, UserResponse } from "@backend/types/api.types";
 
-export async function GET(req: NextRequest) {
+async function handleGetMySellerProfile(
+  req: NextRequest,
+  user: DecodedToken
+): Promise<NextResponse> {
   try {
-    await connectToDB();
+    const seller = await getMySellerProfile(user.userId);
 
-    const token = req.cookies.get("token")?.value;
-    if (!token) throw new Error("Unauthorized");
+    // Type guard for populated userId
+    const populatedUser = seller.userId as any;
 
-    const decoded = verifyJWT(token);
+    const responseData: SellerResponse = {
+      id: seller._id.toString(),
+      shopName: seller.shopName,
+      description: seller.description || "",
+      bannerImage: seller.bannerImage,
+      user: populatedUser._id
+        ? {
+            id: populatedUser._id.toString(),
+            firstname: populatedUser.firstname,
+            lastname: populatedUser.lastname,
+            email: populatedUser.email,
+            role: populatedUser.role,
+          }
+        : undefined,
+      products: seller.products.map((p) => p.toString()),
+    };
 
-    if (decoded.role !== "seller") {
-      throw new Error("Access denied: not a seller");
-    }
-
-    const seller = await Seller.findOne({ userId: decoded.userId }).populate(
-      "userId",
-      "firstname lastname email role"
-    );
-
-    if (!seller) throw new Error("Seller profile not found");
-
-    return NextResponse.json({
-      success: true,
-      seller: {
-        id: seller._id,
-        shopName: seller.shopName,
-        description: seller.description,
-        user: seller.userId,
-        products: seller.products,
-      },
-    });
-  } catch (error: any) {
-    return NextResponse.json(
-      { success: false, message: error.message || "Failed to fetch seller" },
-      { status: 401 }
-    );
+    return successResponse(responseData);
+  } catch (error) {
+    return errorResponse(error, "Failed to fetch seller profile");
   }
 }
+
+export const GET = withDB(withRole(["seller"], handleGetMySellerProfile));
