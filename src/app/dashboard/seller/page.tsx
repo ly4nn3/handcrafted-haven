@@ -1,11 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import DashboardTabs from "@/components/Dashboard/DashboardTabs";
-import ProfileTab from "@/components/Dashboard/ProfileTab";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import DashboardTabs from "@/components/dashboard/DashboardTabs";
+import ProfileTab from "@/components/Seller/ProfileTab";
+import ProductsTab from "@/components/Seller/ProductsTab";
 
 export default function SellerDashboardPage() {
-  const [activeTab, setActiveTab] = useState("Profile");
+  const searchParams = useSearchParams();
+  const tabFromUrl = searchParams.get("tab");
+
+  const [activeTab, setActiveTab] = useState(tabFromUrl || "Profile");
+
+  // Update tab when URL changes
+  useEffect(() => {
+    if (tabFromUrl) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [tabFromUrl]);
 
   const tabs = ["Profile", "Products", "Statistics", "Purchases", "Reviews"];
 
@@ -15,13 +27,8 @@ export default function SellerDashboardPage() {
       activeTab={activeTab}
       setActiveTab={setActiveTab}
     >
-      {activeTab === "Profile" && <ProfileTab type="seller" />}
-      {activeTab === "Products" && (
-        <div style={{ padding: "2rem" }}>
-          <h2>Manage Products</h2>
-          <p>Product management coming soon...</p>
-        </div>
-      )}
+      {activeTab === "Profile" && <ProfileTab />}
+      {activeTab === "Products" && <ProductsTab />}
       {activeTab === "Statistics" && (
         <div style={{ padding: "2rem" }}>
           <h2>Sales Statistics</h2>

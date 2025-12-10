@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import DashboardTabs from "@/components/Dashboard/DashboardTabs";
-import ProfileTab from "@/components/Dashboard/ProfileTab";
+import DashboardTabs from "@/components/dashboard/DashboardTabs";
+import ProfileTab from "@/components/dashboard/ProfileTab";
 
 export default function UserDashboardPage() {
   const [activeTab, setActiveTab] = useState("Profile");
