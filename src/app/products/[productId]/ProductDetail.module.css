@@ -337,6 +337,21 @@
   padding: 2rem;
 }
 
+.reviewsLink {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  margin-left: 0.5rem;
+}
+
+.reviewsLink:hover {
+  color: #2563eb;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
