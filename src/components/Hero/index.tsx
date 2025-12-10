@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import styles from "@/components/Hero/Hero.module.css";
 
 const slides = [
@@ -8,20 +9,24 @@ const slides = [
     title: "Latest Promotions",
     subtitle: "Discover our newest artisanal pieces",
     cta: "Shop Now",
+    link: "/shop",
   },
   {
     title: "Special Offers",
     subtitle: "Limited-time deals on handcrafted items",
     cta: "Explore",
+    link: "/shop?sortBy=price&order=asc",
   },
   {
     title: "Trending Now",
     subtitle: "Check out what's trending",
     cta: "Browse",
+    link: "/shop?sortBy=averageRating&order=desc",
   },
 ];
 
 export default function Hero() {
+  const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
@@ -42,7 +47,12 @@ export default function Hero() {
         >
           <h1>{slide.title}</h1>
           <p>{slide.subtitle}</p>
-          <button className={styles.cta}>{slide.cta}</button>
+          <button
+            className={styles.cta}
+            onClick={() => router.push(slide.link)}
+          >
+            {slide.cta}
+          </button>
         </div>
       ))}
 
@@ -55,6 +65,8 @@ export default function Hero() {
               index === currentSlide ? styles.activeDot : ""
             }`}
             onClick={() => setCurrentSlide(index)}
+            role="button"
+            aria-label={`Go to slide ${index + 1}`}
           ></span>
         ))}
       </div>
