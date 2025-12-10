@@ -158,3 +158,26 @@
     grid-template-columns: 1fr;
   }
 }
+
+.productsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.loadingProducts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .productsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+}

@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { SellerService } from "@/lib/api/sellerService";
+import { ProductService } from "@/lib/api/productService";
 import { SellerProfile } from "@/types/frontend.types";
+import { ProductResponse } from "@backend/types/product.types";
+import ProductCard from "@/components/products/ProductCard";
 import LoadingButton from "@/components/ui/LoadingButton";
 import styles from "./SellerPage.module.css";
 
@@ -13,31 +16,52 @@ export default function SellerPage() {
   const sellerId = params.sellerId as string;
 
   const [seller, setSeller] = useState<SellerProfile | null>(null);
+  const [products, setProducts] = useState<ProductResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [productsLoading, setProductsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchSeller = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const result = await SellerService.getSellerById(sellerId);
-
-        if (result.success) {
-          setSeller(result.data as SellerProfile);
-        } else {
-          setError(result.error);
-        }
-      } catch (err) {
-        setError("Failed to load seller profile");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchSeller();
+    fetchProducts();
   }, [sellerId]);
+
+  const fetchSeller = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await SellerService.getSellerById(sellerId);
+
+      if (result.success) {
+        setSeller(result.data as SellerProfile);
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      setError("Failed to load seller profile");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchProducts = async () => {
+    setProductsLoading(true);
+
+    try {
+      const result = await ProductService.getProducts({
+        sellerId: sellerId,
+      });
+
+      if (result.success) {
+        setProducts(result.data.products);
+      }
+    } catch (err) {
+      console.error("Failed to load products:", err);
+    } finally {
+      setProductsLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -99,20 +123,20 @@ export default function SellerPage() {
 
       {/* Products */}
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>
-          Products ({seller.products?.length || 0})
-        </h2>
-        {!seller.products || seller.products.length === 0 ? (
+        <h2 className={styles.sectionTitle}>Products ({products.length})</h2>
+        {productsLoading ? (
+          <div className={styles.loadingProducts}>
+            <div className={styles.spinner} />
+            <p>Loading products...</p>
+          </div>
+        ) : products.length === 0 ? (
           <p className={styles.emptyState}>
             This seller hasn't listed any products yet.
           </p>
         ) : (
           <div className={styles.productsGrid}>
-            {seller.products.map((productId) => (
-              <div key={productId} className={styles.productCard}>
-                {/* Product card will be implemented later */}
-                <p>Product ID: {productId}</p>
-              </div>
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         )}
