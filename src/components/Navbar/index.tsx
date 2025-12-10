@@ -6,15 +6,19 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import styles from "./Navbar.module.css";
 import { useUser } from "@/app/context/UserContext";
+import { useCart } from "@/app/context/CartContext";
 import { AuthService } from "@/lib/api/authService";
 
 export default function NavBar() {
   const { user, setUser } = useUser();
+  const { getItemCount } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+
+  const cartItemCount = getItemCount();
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -44,7 +48,7 @@ export default function NavBar() {
     { name: "Contact", href: "/contact" },
   ];
 
-  const theme = "light"; // placeholder for now
+  const theme = "light";
   const logoSrc =
     theme === "light"
       ? "/assets/logo/on-light.svg"
@@ -83,7 +87,11 @@ export default function NavBar() {
       {/* User Section */}
       <div className={styles.userSection}>
         {/* Cart Icon */}
-        <button className={styles.iconButton} aria-label="Shopping cart">
+        <Link
+          href="/cart"
+          className={styles.cartButton}
+          aria-label="Shopping cart"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             height="24px"
@@ -93,7 +101,10 @@ export default function NavBar() {
           >
             <path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z" />
           </svg>
-        </button>
+          {cartItemCount > 0 && (
+            <span className={styles.cartBadge}>{cartItemCount}</span>
+          )}
+        </Link>
 
         {/* Not logged in → Login */}
         {!user && (
@@ -181,6 +192,15 @@ export default function NavBar() {
               {link.name}
             </Link>
           ))}
+
+          {/* Cart Link for Mobile */}
+          <Link
+            href="/cart"
+            className={styles.mobileCartLink}
+            onClick={() => setIsOpen(false)}
+          >
+            Cart {cartItemCount > 0 && `(${cartItemCount})`}
+          </Link>
 
           {!user && (
             <Link

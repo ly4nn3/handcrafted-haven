@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ProductService } from "@/lib/api/productService";
 import { ProductResponse } from "@backend/types/product.types";
+import { useCart } from "@/app/context/CartContext";
 import ImageGallery from "@/components/products/ImageGallery";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
 import LoadingButton from "@/components/ui/LoadingButton";
@@ -15,10 +16,13 @@ export default function ProductDetailPage() {
   const router = useRouter();
   const productId = params.productId as string;
 
+  const { addToCart, isInCart } = useCart();
+
   const [product, setProduct] = useState<ProductResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
     fetchProduct();
@@ -44,8 +48,22 @@ export default function ProductDetailPage() {
   };
 
   const handleAddToCart = () => {
-    // TODO: Implement cart functionality in Phase 4
-    alert(`Added ${quantity} item(s) to cart! (Cart feature coming soon)`);
+    if (!product) return;
+
+    addToCart(product, quantity);
+    setAddedToCart(true);
+
+    // Reset the "Added to Cart" message after 3 seconds
+    setTimeout(() => {
+      setAddedToCart(false);
+    }, 3000);
+  };
+
+  const handleBuyNow = () => {
+    if (!product) return;
+
+    addToCart(product, quantity);
+    router.push("/cart");
   };
 
   const handleQuantityChange = (newQuantity: number) => {
@@ -76,6 +94,7 @@ export default function ProductDetailPage() {
   }
 
   const isOutOfStock = product.stock === 0;
+  const productInCart = isInCart(product.id);
 
   return (
     <div className={styles.productDetailPage}>
@@ -138,6 +157,23 @@ export default function ProductDetailPage() {
             )}
           </div>
 
+          {/* Already in Cart Notice */}
+          {productInCart && !addedToCart && (
+            <div className={styles.inCartNotice}>
+              <span>✓ This item is already in your cart</span>
+              <Link href="/cart" className={styles.viewCartLink}>
+                View Cart
+              </Link>
+            </div>
+          )}
+
+          {/* Added to Cart Success Message */}
+          {addedToCart && (
+            <div className={styles.addedToCartMessage}>
+              ✓ Added {quantity} {quantity === 1 ? "item" : "items"} to cart!
+            </div>
+          )}
+
           {/* Quantity Selector */}
           {!isOutOfStock && (
             <div className={styles.quantitySection}>
@@ -171,7 +207,7 @@ export default function ProductDetailPage() {
             </div>
           )}
 
-          {/* Add to Cart Button */}
+          {/* Action Buttons */}
           <div className={styles.actions}>
             <LoadingButton
               onClick={handleAddToCart}
@@ -180,6 +216,12 @@ export default function ProductDetailPage() {
             >
               {isOutOfStock ? "Out of Stock" : "Add to Cart"}
             </LoadingButton>
+
+            {!isOutOfStock && (
+              <button onClick={handleBuyNow} className={styles.buyNowButton}>
+                Buy Now
+              </button>
+            )}
           </div>
 
           {/* Seller Info */}

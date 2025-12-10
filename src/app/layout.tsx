@@ -4,6 +4,7 @@ import NavBar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Amarante, Lato, Open_Sans } from "next/font/google";
 import { UserProvider } from "./context/UserContext";
+import { CartProvider } from "./context/CartContext";
 
 const amarante = Amarante({
   subsets: ["latin"],
@@ -32,7 +33,7 @@ export const metadata = {
   icons: {
     icon: [
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
     ],
     apple: "/apple-touch-icon.png",
   },
@@ -47,9 +48,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     >
       <body className={openSans.className}>
         <UserProvider>
-          <NavBar />
-          <main>{children}</main>
-          <Footer />
+          <CartProvider>
+            <NavBar />
+            <main>{children}</main>
+            <Footer />
+          </CartProvider>
         </UserProvider>
       </body>
     </html>

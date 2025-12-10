@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ProductResponse } from "@backend/types/product.types";
+import { useCart } from "@/app/context/CartContext";
 import styles from "./ProductCard.module.css";
 
 interface ProductCardProps {
@@ -11,13 +12,22 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const router = useRouter();
+  const { addToCart, isInCart } = useCart();
 
-  const handleClick = () => {
+  const handleCardClick = () => {
     router.push(`/products/${product.id}`);
   };
 
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+    addToCart(product, 1);
+  };
+
+  const productInCart = isInCart(product.id);
+  const isOutOfStock = product.stock === 0;
+
   return (
-    <div className={styles.productCard} onClick={handleClick}>
+    <div className={styles.productCard} onClick={handleCardClick}>
       <div className={styles.imageContainer}>
         {product.images[0] ? (
           <Image
@@ -30,8 +40,11 @@ export default function ProductCard({ product }: ProductCardProps) {
         ) : (
           <div className={styles.noImage}>No Image</div>
         )}
-        {product.stock === 0 && (
+        {isOutOfStock && (
           <span className={styles.outOfStock}>Out of Stock</span>
+        )}
+        {productInCart && !isOutOfStock && (
+          <span className={styles.inCartBadge}>In Cart</span>
         )}
       </div>
 
@@ -56,6 +69,17 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {product.seller && (
           <p className={styles.seller}>by {product.seller.shopName}</p>
+        )}
+
+        {/* Quick Add to Cart Button */}
+        {!isOutOfStock && (
+          <button
+            onClick={handleAddToCart}
+            className={styles.quickAddButton}
+            aria-label="Add to cart"
+          >
+            {productInCart ? "Add More" : "Add to Cart"}
+          </button>
         )}
       </div>
     </div>
