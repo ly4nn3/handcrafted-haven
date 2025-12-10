@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ProductService } from "@/lib/api/productService";
 import { ProductResponse } from "@backend/types/product.types";
 import ImageGallery from "@/components/products/ImageGallery";
+import ReviewsSection from "@/components/reviews/ReviewsSection";
 import LoadingButton from "@/components/ui/LoadingButton";
 import styles from "./ProductDetail.module.css";
 
@@ -107,8 +108,19 @@ export default function ProductDetailPage() {
             </div>
             <span className={styles.ratingText}>
               {product.averageRating.toFixed(1)} ({product.totalReviews}{" "}
-              reviews)
+              {product.totalReviews === 1 ? "review" : "reviews"})
             </span>
+            {/* Scroll to reviews */}
+            <button
+              onClick={() => {
+                const reviewsSection =
+                  document.getElementById("reviews-section");
+                reviewsSection?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className={styles.reviewsLink}
+            >
+              See all reviews
+            </button>
           </div>
 
           {/* Price */}
@@ -215,15 +227,9 @@ export default function ProductDetailPage() {
         <p className={styles.description}>{product.description}</p>
       </div>
 
-      {/* Reviews Section (Placeholder) */}
-      <div className={styles.reviewsSection}>
-        <h2 className={styles.sectionTitle}>Customer Reviews</h2>
-        <div className={styles.reviewsPlaceholder}>
-          <p>Reviews feature coming soon in Phase 3!</p>
-          <p className={styles.reviewsSubtext}>
-            Users will be able to rate and review this product.
-          </p>
-        </div>
+      {/* Reviews Section */}
+      <div id="reviews-section">
+        <ReviewsSection productId={productId} />
       </div>
     </div>
   );
