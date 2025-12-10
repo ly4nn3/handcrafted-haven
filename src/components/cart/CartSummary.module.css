@@ -1,0 +1,87 @@
+.cartSummary {
+  background: white;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  position: sticky;
+  top: 2rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 1.5rem 0;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.free {
+  color: #059669;
+  font-weight: 700;
+}
+
+.shippingNote {
+  font-size: 0.75rem;
+  color: #3b82f6;
+  background-color: #eff6ff;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  margin: 0 0 1rem 0;
+  text-align: center;
+}
+
+.divider {
+  height: 1px;
+  background-color: #e5e7eb;
+  margin: 1.5rem 0;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.totalLabel {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.totalValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #059669;
+}
+
+.disclaimer {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-align: center;
+  margin: 0.75rem 0 0 0;
+  font-style: italic;
+}
+
+@media (max-width: 1024px) {
+  .cartSummary {
+    position: static;
+  }
+}
