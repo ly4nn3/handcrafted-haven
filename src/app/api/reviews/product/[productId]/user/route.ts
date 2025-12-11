@@ -6,21 +6,17 @@ import { successResponse, errorResponse } from "@backend/utils/apiResponse";
 import { DecodedToken } from "@backend/types/auth.types";
 import { ReviewResponse } from "@backend/types/review.types";
 
-/**
- * GET /api/reviews/product/[productId]/user - Get current user's review for product
- */
 async function handleGetUserReview(
   req: NextRequest,
   user: DecodedToken,
   context: { params: { productId: string } }
 ): Promise<NextResponse> {
+  const { productId } = context.params;
+
   try {
-    const { productId } = context.params;
     const review = await getUserProductReview(user.userId, productId);
 
-    if (!review) {
-      return successResponse(null);
-    }
+    if (!review) return successResponse(null);
 
     const responseData: ReviewResponse = {
       id: review._id.toString(),
@@ -34,7 +30,6 @@ async function handleGetUserReview(
       updatedAt: review.updatedAt,
       user: (review.userId as any).firstname
         ? {
-            id: (review.userId as any)._id.toString(),
             firstname: (review.userId as any).firstname,
             lastname: (review.userId as any).lastname,
           }
