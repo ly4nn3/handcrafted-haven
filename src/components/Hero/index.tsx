@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import styles from "@/components/Hero/Hero.module.css";
+import styles from "@/components/hero/Hero.module.css";
 
 const slides = [
   {

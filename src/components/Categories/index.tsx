@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import styles from "@/components/Categories/Categories.module.css";
+import styles from "@/components/categories/Categories.module.css";
 
 const categories = [
   { name: "Home Decor", value: "Home Decor", icon: "🏠" },

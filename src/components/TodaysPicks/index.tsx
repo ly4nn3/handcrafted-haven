@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ProductService } from "@/lib/api/productService";
 import { ProductResponse } from "@backend/types/product.types";
-import styles from "@/components/TodaysPicks/TodaysPicks.module.css";
+import styles from "@/components/todaysPicks/TodaysPicks.module.css";
 
 export default function TodaysPicks() {
   const router = useRouter();
