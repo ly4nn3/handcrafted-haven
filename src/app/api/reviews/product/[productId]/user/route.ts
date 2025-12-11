@@ -12,8 +12,8 @@ import { ReviewResponse } from "@backend/types/review.types";
  */
 async function handleGetUserReview(
   req: NextRequest,
-  user: DecodedToken,
-  context: { params: { productId: string } }
+  context: { params: { productId: string } },
+  user: DecodedToken
 ): Promise<NextResponse> {
   const { productId } = context.params;
 

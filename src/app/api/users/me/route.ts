@@ -11,6 +11,7 @@ import { UserResponse } from "@backend/types/api.types";
 
 async function handleGetMyProfile(
   req: NextRequest,
+  context: { params: Record<string, string> },
   user: DecodedToken
 ): Promise<NextResponse> {
   try {
@@ -34,19 +35,16 @@ async function handleGetMyProfile(
 
 async function handleUpdateMyProfile(
   req: NextRequest,
+  context: { params: Record<string, string> },
   user: DecodedToken
 ): Promise<NextResponse> {
   try {
     const body = await req.json();
     const { firstname, lastname } = body;
 
-    // Validate input
     if (!firstname || !lastname) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "First name and last name are required",
-        },
+        { success: false, error: "First name and last name are required" },
         { status: 400 }
       );
     }

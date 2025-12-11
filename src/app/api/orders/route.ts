@@ -3,7 +3,7 @@ import { createOrders } from "@backend/controllers/orderController";
 import { withAuth } from "@backend/middleware/auth";
 import { CreateOrderDTO } from "@/types/order.types";
 
-export const POST = withAuth(async (req: NextRequest, user) => {
+export const POST = withAuth(async (req: NextRequest, context, user) => {
   try {
     const body: CreateOrderDTO = await req.json();
 

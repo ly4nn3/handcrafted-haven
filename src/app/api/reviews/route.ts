@@ -12,6 +12,7 @@ import { ReviewResponse } from "@backend/types/review.types";
  */
 async function handleCreateReview(
   req: NextRequest,
+  context: { params: Record<string, string> },
   user: DecodedToken
 ): Promise<NextResponse> {
   try {

@@ -11,12 +11,12 @@ import { SellerResponse } from "@backend/types/api.types";
 
 async function handleGetMySellerProfile(
   req: NextRequest,
+  context: { params: Record<string, string> },
   user: DecodedToken
 ): Promise<NextResponse> {
   try {
     const seller = await getMySellerProfile(user.userId);
 
-    // Type guard for populated userId
     const populatedUser = seller.userId as any;
 
     const responseData: SellerResponse = {
@@ -44,6 +44,7 @@ async function handleGetMySellerProfile(
 
 async function handleUpdateMySellerProfile(
   req: NextRequest,
+  context: { params: Record<string, string> },
   user: DecodedToken
 ): Promise<NextResponse> {
   try {
@@ -57,7 +58,6 @@ async function handleUpdateMySellerProfile(
       lastname,
     });
 
-    // Type guard for populated userId
     const populatedUser = updatedSeller.userId as any;
 
     const responseData: SellerResponse = {

@@ -26,14 +26,14 @@ export const getAuthUser = (req: NextRequest): DecodedToken => {
 export function withAuth<Context extends { params: Record<string, string> }>(
   handler: (
     req: NextRequest,
-    user: DecodedToken,
-    context: Context
+    context: Context,
+    user: DecodedToken
   ) => Promise<NextResponse>
 ) {
   return async (req: NextRequest, context: Context): Promise<NextResponse> => {
     try {
       const user = getAuthUser(req);
-      return await handler(req, user, context);
+      return await handler(req, context, user);
     } catch (error) {
       if (error instanceof JWTError) {
         return NextResponse.json(
@@ -53,23 +53,21 @@ export function withRole<Context extends { params: Record<string, string> }>(
   allowedRoles: ("user" | "seller")[],
   handler: (
     req: NextRequest,
-    user: DecodedToken,
-    context: Context
+    context: Context,
+    user: DecodedToken
   ) => Promise<NextResponse>
 ) {
-  return withAuth<Context>(
-    async (req: NextRequest, user: DecodedToken, context: Context) => {
-      if (!allowedRoles.includes(user.role)) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "Access denied: insufficient permissions",
-          },
-          { status: ErrorType.FORBIDDEN }
-        );
-      }
-
-      return await handler(req, user, context);
+  return withAuth<Context>(async (req, context, user) => {
+    if (!allowedRoles.includes(user.role)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Access denied: insufficient permissions",
+        },
+        { status: ErrorType.FORBIDDEN }
+      );
     }
-  );
+
+    return await handler(req, context, user);
+  });
 }

@@ -14,6 +14,7 @@ import { successResponse, errorResponse } from "@backend/utils/apiResponse";
 import { DecodedToken } from "@backend/types/auth.types";
 import { ProductResponse } from "@backend/types/product.types";
 
+// Build consistent product response
 function buildProductResponse(product: any): ProductResponse {
   return {
     id: product._id.toString(),
@@ -32,6 +33,7 @@ function buildProductResponse(product: any): ProductResponse {
     totalReviews: product.totalReviews,
     createdAt: product.createdAt,
     updatedAt: product.updatedAt,
+
     seller: product.sellerId?.shopName
       ? {
           id: product.sellerId._id.toString(),
@@ -43,7 +45,8 @@ function buildProductResponse(product: any): ProductResponse {
 }
 
 /**
- * GET /api/products/[productId] - Get single product (public)
+ * GET /api/products/[productId]
+ * Public route
  */
 async function handleGetProduct(
   req: NextRequest,
@@ -62,12 +65,13 @@ async function handleGetProduct(
 }
 
 /**
- * PUT /api/products/[productId] - Update product (seller only)
+ * PUT /api/products/[productId]
+ * Seller only
  */
 async function handleUpdateProduct(
   req: NextRequest,
-  user: DecodedToken,
-  context: { params: { productId: string } }
+  context: { params: { productId: string } },
+  user: DecodedToken
 ) {
   try {
     const { productId } = context.params;
@@ -87,12 +91,13 @@ async function handleUpdateProduct(
 }
 
 /**
- * DELETE /api/products/[productId] - Delete product (seller only)
+ * DELETE /api/products/[productId]
+ * Seller only
  */
 async function handleDeleteProduct(
   req: NextRequest,
-  user: DecodedToken,
-  context: { params: { productId: string } }
+  context: { params: { productId: string } },
+  user: DecodedToken
 ) {
   try {
     const { productId } = context.params;
@@ -105,10 +110,13 @@ async function handleDeleteProduct(
   }
 }
 
+// Export routes
 export const GET = withDB(handleGetProduct);
+
 export const PUT = withDB(
   withRole<{ params: { productId: string } }>(["seller"], handleUpdateProduct)
 );
+
 export const DELETE = withDB(
   withRole<{ params: { productId: string } }>(["seller"], handleDeleteProduct)
 );

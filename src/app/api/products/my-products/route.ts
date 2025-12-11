@@ -11,6 +11,7 @@ import { ProductResponse } from "@backend/types/product.types";
  */
 async function handleGetMyProducts(
   req: NextRequest,
+  context: { params: Record<string, string> },
   user: DecodedToken
 ): Promise<NextResponse> {
   try {
@@ -42,4 +43,6 @@ async function handleGetMyProducts(
   }
 }
 
-export const GET = withDB(withRole(["seller"], handleGetMyProducts));
+export const GET = withDB(
+  withRole<{ params: Record<string, string> }>(["seller"], handleGetMyProducts)
+);

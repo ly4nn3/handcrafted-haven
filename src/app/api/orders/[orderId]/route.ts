@@ -3,7 +3,7 @@ import { getOrderById } from "@backend/controllers/orderController";
 import { withAuth } from "@backend/middleware/auth";
 
 export const GET = withAuth(
-  async (req: NextRequest, user, context: { params: { orderId: string } }) => {
+  async (req: NextRequest, context: { params: { orderId: string } }, user) => {
     try {
       const { orderId } = context.params;
 
