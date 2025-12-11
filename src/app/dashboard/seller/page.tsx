@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import DashboardTabs from "@/components/dashboard/DashboardTabs";
-import ProfileTab from "@/components/Seller/ProfileTab";
-import ProductsTab from "@/components/Seller/ProductsTab";
-import ReviewsTab from "@/components/Seller/ReviewsTab";
+import ProfileTab from "@/components/seller/ProfileTab";
+import ProductsTab from "@/components/seller/ProductsTab";
+import ReviewsTab from "@/components/seller/ReviewsTab";
 
 export default function SellerDashboardPage() {
   const searchParams = useSearchParams();

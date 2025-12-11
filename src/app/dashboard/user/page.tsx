@@ -3,7 +3,7 @@
 import { useState } from "react";
 import DashboardTabs from "@/components/dashboard/DashboardTabs";
 import ProfileTab from "@/components/dashboard/ProfileTab";
-import ReviewsTab from "@/components/User/ReviewsTab";
+import ReviewsTab from "@/components/user/ReviewsTab";
 
 export default function UserDashboardPage() {
   const [activeTab, setActiveTab] = useState("Profile");
