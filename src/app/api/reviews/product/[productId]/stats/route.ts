@@ -8,10 +8,10 @@ import { successResponse, errorResponse } from "@backend/utils/apiResponse";
  */
 async function handleGetReviewStats(
   req: NextRequest,
-  context: { params: { productId: string } }
+  context: { params: Promise<{ productId: string }> }
 ): Promise<NextResponse> {
   try {
-    const { productId } = context.params;
+    const { productId } = await context.params;
     const stats = await getReviewStats(productId);
 
     return successResponse(stats);

@@ -1,114 +1,97 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withDB } from "@backend/middleware/dbConnection";
-import { withAuth } from "@backend/middleware/auth";
 import {
-  getReviewById,
   updateReview,
   deleteReview,
+  getReviewById,
 } from "@backend/controllers/reviewController";
-import { validateUpdateReview } from "@backend/utils/reviewValidation";
-import { successResponse, errorResponse } from "@backend/utils/apiResponse";
-import { DecodedToken } from "@backend/types/auth.types";
-import { ReviewResponse } from "@backend/types/review.types";
+import { withAuth } from "@backend/middleware/auth";
+import { UpdateReviewDTO } from "@backend/types/review.types";
 
 /**
- * GET /api/reviews/[reviewId] - Get single review
+ * GET /api/reviews/[reviewId]
+ * Get a single review by ID
  */
-async function handleGetReview(
+export const GET = async (
   req: NextRequest,
-  context: { params: { reviewId: string } }
-): Promise<NextResponse> {
+  context: { params: Promise<{ reviewId: string }> }
+) => {
   try {
-    const { reviewId } = context.params;
-    const review = await getReviewById(reviewId);
+    const params = await context.params; // Await params
+    const review = await getReviewById(params.reviewId);
 
-    const responseData: ReviewResponse = {
-      id: review._id.toString(),
-      productId: review.productId.toString(),
-      userId: review.userId.toString(),
-      rating: review.rating,
-      comment: review.comment,
-      isVerifiedPurchase: review.isVerifiedPurchase,
-      helpfulCount: review.helpfulCount,
-      createdAt: review.createdAt,
-      updatedAt: review.updatedAt,
-      user: (review.userId as any).firstname
-        ? {
-            id: (review.userId as any)._id.toString(),
-            firstname: (review.userId as any).firstname,
-            lastname: (review.userId as any).lastname,
-          }
-        : undefined,
-    };
-
-    return successResponse(responseData);
-  } catch (error) {
-    return errorResponse(error, "Failed to fetch review");
+    return NextResponse.json({
+      success: true,
+      data: review,
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 404 }
+    );
   }
-}
+};
 
 /**
- * PUT /api/reviews/[reviewId] - Update review (must own)
+ * PUT /api/reviews/[reviewId]
+ * Update a review (user must own the review)
  */
-async function handleUpdateReview(
-  req: NextRequest,
-  user: DecodedToken,
-  context: { params: { reviewId: string } }
-): Promise<NextResponse> {
-  try {
-    const { reviewId } = context.params;
-    const body = await req.json();
-    const validatedData = validateUpdateReview(body);
+export const PUT = withAuth(
+  async (
+    req: NextRequest,
+    user,
+    context: { params: Promise<{ reviewId: string }> }
+  ) => {
+    try {
+      const params = await context.params; // Await params
+      const body: UpdateReviewDTO = await req.json();
 
-    const review = await updateReview(user.userId, reviewId, validatedData);
+      const updatedReview = await updateReview(
+        user.userId,
+        params.reviewId,
+        body
+      );
 
-    const responseData: ReviewResponse = {
-      id: review._id.toString(),
-      productId: review.productId.toString(),
-      userId: review.userId.toString(),
-      rating: review.rating,
-      comment: review.comment,
-      isVerifiedPurchase: review.isVerifiedPurchase,
-      helpfulCount: review.helpfulCount,
-      createdAt: review.createdAt,
-      updatedAt: review.updatedAt,
-      user: (review.userId as any).firstname
-        ? {
-            id: (review.userId as any)._id.toString(),
-            firstname: (review.userId as any).firstname,
-            lastname: (review.userId as any).lastname,
-          }
-        : undefined,
-    };
-
-    return successResponse(responseData, "Review updated successfully");
-  } catch (error) {
-    return errorResponse(error, "Failed to update review");
+      return NextResponse.json({
+        success: true,
+        data: updatedReview,
+      });
+    } catch (error: any) {
+      console.error("Update error:", error.message);
+      const statusCode = error.message.includes("Unauthorized") ? 403 : 400;
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: statusCode }
+      );
+    }
   }
-}
-
-/**
- * DELETE /api/reviews/[reviewId] - Delete review (must own)
- */
-async function handleDeleteReview(
-  req: NextRequest,
-  user: DecodedToken,
-  context: { params: { reviewId: string } }
-): Promise<NextResponse> {
-  try {
-    const { reviewId } = context.params;
-    await deleteReview(user.userId, reviewId);
-
-    return successResponse(null, "Review deleted successfully");
-  } catch (error) {
-    return errorResponse(error, "Failed to delete review");
-  }
-}
-
-export const GET = withDB(handleGetReview);
-export const PUT = withDB(
-  withAuth<[{ params: { reviewId: string } }]>(handleUpdateReview)
 );
-export const DELETE = withDB(
-  withAuth<[{ params: { reviewId: string } }]>(handleDeleteReview)
+
+/**
+ * DELETE /api/reviews/[reviewId]
+ * Delete a review (user must own the review)
+ */
+export const DELETE = withAuth(
+  async (
+    req: NextRequest,
+    user,
+    context: { params: Promise<{ reviewId: string }> }
+  ) => {
+    try {
+      const params = await context.params; // Await params
+
+      await deleteReview(user.userId, params.reviewId);
+
+      return NextResponse.json({
+        success: true,
+        data: null,
+      });
+    } catch (error: any) {
+      console.error("Delete error:", error.message);
+      const statusCode = error.message.includes("Unauthorized") ? 403 : 400;
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: statusCode }
+      );
+    }
+  }
 );

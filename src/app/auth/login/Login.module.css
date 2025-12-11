@@ -20,14 +20,7 @@
   gap: 1rem;
 }
 
-.loginForm input {
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--french-gray);
-  border-radius: 6px;
-  font-size: 1rem;
-}
-
-.loginForm button {
+.loginForm > button[type="submit"] {
   padding: 0.75rem 1rem;
   background-color: var(--aquamarine);
   color: var(--night);
@@ -37,8 +30,19 @@
   font-size: 1rem;
 }
 
-.loginForm button:hover {
+.loginForm > button[type="submit"]:hover:not(:disabled) {
   background-color: #5ae6a0;
+}
+
+.errorBanner {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background-color: #fee2e2;
+  color: var(--ou-crimson);
+  border: 1px solid var(--ou-crimson);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: center;
 }
 
 .bottomText {

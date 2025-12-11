@@ -9,10 +9,10 @@ import { ReviewResponse } from "@backend/types/review.types";
  */
 async function handleGetProductReviews(
   req: NextRequest,
-  context: { params: { productId: string } }
+  context: { params: Promise<{ productId: string }> } // Changed to Promise
 ): Promise<NextResponse> {
   try {
-    const { productId } = context.params;
+    const { productId } = await context.params; // Added await
     const { searchParams } = new URL(req.url);
 
     const page = parseInt(searchParams.get("page") || "1");

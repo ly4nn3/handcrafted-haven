@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import DashboardTabs from "@/components/dashboard/DashboardTabs";
 import ProfileTab from "@/components/Seller/ProfileTab";
 import ProductsTab from "@/components/Seller/ProductsTab";
+import ReviewsTab from "@/components/Seller/ReviewsTab";
 
 export default function SellerDashboardPage() {
   const searchParams = useSearchParams();
@@ -19,7 +20,7 @@ export default function SellerDashboardPage() {
     }
   }, [tabFromUrl]);
 
-  const tabs = ["Profile", "Products", "Statistics", "Purchases", "Reviews"];
+  const tabs = ["Profile", "Products", "Reviews"];
 
   return (
     <DashboardTabs
@@ -29,24 +30,7 @@ export default function SellerDashboardPage() {
     >
       {activeTab === "Profile" && <ProfileTab />}
       {activeTab === "Products" && <ProductsTab />}
-      {activeTab === "Statistics" && (
-        <div style={{ padding: "2rem" }}>
-          <h2>Sales Statistics</h2>
-          <p>Analytics dashboard coming soon...</p>
-        </div>
-      )}
-      {activeTab === "Purchases" && (
-        <div style={{ padding: "2rem" }}>
-          <h2>Purchase History</h2>
-          <p>Order history coming soon...</p>
-        </div>
-      )}
-      {activeTab === "Reviews" && (
-        <div style={{ padding: "2rem" }}>
-          <h2>Reviews</h2>
-          <p>Customer reviews coming soon...</p>
-        </div>
-      )}
+      {activeTab === "Reviews" && <ReviewsTab />}
     </DashboardTabs>
   );
 }

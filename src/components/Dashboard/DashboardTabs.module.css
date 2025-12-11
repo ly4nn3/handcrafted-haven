@@ -24,19 +24,19 @@
   border-bottom: 3px solid transparent;
   font-size: 1rem;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-primary);
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s;
 }
 
 .tab:hover {
-  color: #3b82f6;
+  color: var(--text-light);
 }
 
 .activeTab {
-  color: #3b82f6;
-  border-bottom-color: #3b82f6;
+  color: #000000;
+  border-bottom-color: var(--ou-crimson);
 }
 
 .tabContent {

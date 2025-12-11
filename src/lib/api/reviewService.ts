@@ -113,6 +113,58 @@ export class ReviewService {
   }
 
   /**
+   * Get all reviews by the current user
+   */
+  static async getMyReviews(
+    page: number = 1,
+    limit: number = 10
+  ): Promise<ApiResponse<PaginatedReviews>> {
+    try {
+      const response = await fetch(
+        `${API_BASE}/user/my-reviews?page=${page}&limit=${limit}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return {
+        success: false,
+        error: "Network error. Please try again.",
+      };
+    }
+  }
+
+  /**
+   * Get all reviews for seller's products
+   */
+  static async getSellerProductReviews(
+    page: number = 1,
+    limit: number = 10
+  ): Promise<ApiResponse<PaginatedReviews>> {
+    try {
+      const response = await fetch(
+        `${API_BASE}/seller/product-reviews?page=${page}&limit=${limit}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return {
+        success: false,
+        error: "Network error. Please try again.",
+      };
+    }
+  }
+
+  /**
    * Update a review
    */
   static async updateReview(
@@ -128,6 +180,7 @@ export class ReviewService {
       });
 
       const data = await response.json();
+
       return data;
     } catch (error) {
       return {

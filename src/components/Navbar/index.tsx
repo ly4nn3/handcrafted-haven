@@ -45,7 +45,6 @@ export default function NavBar() {
   const navLinks = [
     { name: "Shop", href: "/shop" },
     { name: "About", href: "/about" },
-    { name: "Contact", href: "/contact" },
   ];
 
   const theme = "light";
@@ -64,6 +63,7 @@ export default function NavBar() {
             alt="Handcrafted Haven Logo"
             width={200}
             height={100}
+            loading="eager"
           />
         </Link>
         <Link href="/">
@@ -205,7 +205,7 @@ export default function NavBar() {
           {!user && (
             <Link
               href="/auth/login"
-              className={styles.cta}
+              className={styles.login}
               onClick={() => setIsOpen(false)}
             >
               Login

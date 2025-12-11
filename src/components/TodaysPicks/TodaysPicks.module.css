@@ -1,6 +1,5 @@
 .todaysPicks {
   padding: 4rem 0;
-  background: #f9fafb;
 }
 
 .header {
@@ -14,7 +13,7 @@
 }
 
 .todaysPicks h2 {
-  font-family: var(--font-amarante);
+  font-family: var(--font-lato);
   font-size: 2rem;
   color: #1f2937;
   margin: 0;
@@ -23,8 +22,8 @@
 .viewAllButton {
   padding: 0.75rem 1.5rem;
   background: transparent;
-  color: #3b82f6;
-  border: 2px solid #3b82f6;
+  color: var(--text-primary);
+  border: 2px solid var(--border-dark);
   border-radius: 0.5rem;
   font-family: var(--font-lato);
   font-size: 1rem;
@@ -34,8 +33,9 @@
 }
 
 .viewAllButton:hover {
-  background: #3b82f6;
-  color: white;
+  background: var(--aquamarine);
+  color: var(--text-primary);
+  border: 2px solid var(--aquamarine);
 }
 
 .grid {
@@ -146,7 +146,7 @@
 }
 
 .stars {
-  color: #fbbf24;
+  color: var(--text-primary);
   font-size: 0.875rem;
   letter-spacing: 0.1em;
 }

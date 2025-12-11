@@ -19,7 +19,16 @@ export default function ReviewCard({
   const { user } = useUser();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const isOwnReview = user?.userId === review.userId;
+  const currentUserId = user?.userId?.toString();
+  const reviewUserId =
+    typeof review.userId === "string"
+      ? review.userId
+      : (review.userId as any)?.id || (review.userId as any)?._id;
+
+  const isOwnReview = currentUserId === reviewUserId?.toString();
+
+  const reviewUser = review.user || (review.userId as any);
+
   const reviewDate = new Date(review.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -39,11 +48,11 @@ export default function ReviewCard({
       <div className={styles.header}>
         <div className={styles.userInfo}>
           <div className={styles.avatar}>
-            {review.user?.firstname[0].toUpperCase()}
+            {reviewUser?.firstname?.[0]?.toUpperCase() || "U"}
           </div>
           <div>
             <p className={styles.userName}>
-              {review.user?.firstname} {review.user?.lastname}
+              {reviewUser?.firstname} {reviewUser?.lastname}
             </p>
             <p className={styles.reviewDate}>{reviewDate}</p>
           </div>
@@ -52,8 +61,12 @@ export default function ReviewCard({
         {/* Rating */}
         <div className={styles.rating}>
           <div className={styles.stars}>
-            {"★".repeat(review.rating)}
-            {"☆".repeat(5 - review.rating)}
+            {Array.from({ length: review.rating }, (_, i) => (
+              <span key={`filled-${i}`}>★</span>
+            ))}
+            {Array.from({ length: 5 - review.rating }, (_, i) => (
+              <span key={`empty-${i}`}>☆</span>
+            ))}
           </div>
         </div>
       </div>

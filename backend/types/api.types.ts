@@ -35,6 +35,8 @@ export interface SellerResponse {
   shopName: string;
   description: string;
   bannerImage?: string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
   user?: UserResponse;
   products?: string[];
 }

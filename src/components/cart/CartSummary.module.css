@@ -23,7 +23,7 @@
 
 .label {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--text-primary);
 }
 
 .value {
@@ -33,7 +33,7 @@
 }
 
 .free {
-  color: #059669;
+  color: var(--ou-crimson);
   font-weight: 700;
 }
 

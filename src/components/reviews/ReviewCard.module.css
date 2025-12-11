@@ -41,7 +41,7 @@
 
 .reviewDate {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--text-primary);
   margin: 0.25rem 0 0 0;
 }
 
@@ -51,7 +51,7 @@
 }
 
 .stars {
-  color: #fbbf24;
+  color: var(--text-primary);
   font-size: 1rem;
 }
 
@@ -95,15 +95,14 @@
   background: none;
   border: 1px solid #d1d5db;
   border-radius: 0.25rem;
-  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .editButton {
-  color: #3b82f6;
-  border-color: #3b82f6;
+  color: #0044b3;
+  border-color: #0044b3;
 }
 
 .editButton:hover {
@@ -111,8 +110,8 @@
 }
 
 .deleteButton {
-  color: #ef4444;
-  border-color: #ef4444;
+  color: var(--ou-crimson);
+  border-color: var(--ou-crimson);
 }
 
 .deleteButton:hover {

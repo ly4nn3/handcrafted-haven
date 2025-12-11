@@ -54,7 +54,9 @@ async function handleGetProducts(req: NextRequest): Promise<NextResponse> {
 
     const products: ProductResponse[] = result.products.map((product) => ({
       id: product._id.toString(),
-      sellerId: product.sellerId.toString(),
+      sellerId: (product.sellerId as any)._id
+        ? (product.sellerId as any)._id.toString()
+        : product.sellerId.toString(),
       name: product.name,
       description: product.description,
       price: product.price,
@@ -100,7 +102,9 @@ async function handleCreateProduct(
 
     const responseData: ProductResponse = {
       id: product._id.toString(),
-      sellerId: product.sellerId.toString(),
+      sellerId: (product.sellerId as any)._id
+        ? (product.sellerId as any)._id.toString()
+        : product.sellerId.toString(),
       name: product.name,
       description: product.description,
       price: product.price,
@@ -113,6 +117,13 @@ async function handleCreateProduct(
       totalReviews: product.totalReviews,
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
+      seller: (product.sellerId as any).shopName
+        ? {
+            id: (product.sellerId as any)._id.toString(),
+            shopName: (product.sellerId as any).shopName,
+            userId: (product.sellerId as any).userId?.toString(),
+          }
+        : undefined,
     };
 
     return successResponse(responseData, "Product created successfully");

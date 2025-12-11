@@ -2,11 +2,36 @@
 
 import { useEffect, useState } from "react";
 import { useSellerProfile } from "@/app/hooks/useSellerProfile";
+import { SellerService } from "@/lib/api/sellerService";
 import LoadingButton from "@/components/ui/LoadingButton";
+import ProfileEditModal from "@/components/dashboard/ProfileEditModal";
 import styles from "./ProfileTab.module.css";
 
 export default function ProfileTab() {
   const { seller, loading, error, refetch } = useSellerProfile();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [updateError, setUpdateError] = useState<string | null>(null);
+
+  const handleEditClick = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveProfile = async (updatedData: any) => {
+    try {
+      const result = await SellerService.updateMySellerProfile(updatedData);
+      if (result.success) {
+        setIsEditModalOpen(false);
+        refetch(); // Refetch the profile data
+      } else {
+        throw new Error(result.error || "Failed to update seller profile");
+      }
+    } catch (err) {
+      setUpdateError(
+        err instanceof Error ? err.message : "Failed to update profile"
+      );
+      throw err;
+    }
+  };
 
   if (loading) {
     return (
@@ -37,6 +62,12 @@ export default function ProfileTab() {
   return (
     <div className={styles.profileContainer}>
       <h2 className={styles.title}>Seller Profile</h2>
+
+      {updateError && (
+        <div className={styles.errorContainer}>
+          <p className={styles.error}>{updateError}</p>
+        </div>
+      )}
 
       <div className={styles.profileCard}>
         <div className={styles.profileHeader}>
@@ -69,9 +100,18 @@ export default function ProfileTab() {
         </div>
 
         <div className={styles.actions}>
-          <LoadingButton>Edit Profile</LoadingButton>
+          <LoadingButton onClick={handleEditClick}>Edit Profile</LoadingButton>
         </div>
       </div>
+
+      {isEditModalOpen && seller && (
+        <ProfileEditModal
+          type="seller"
+          data={seller}
+          onClose={() => setIsEditModalOpen(false)}
+          onSave={handleSaveProfile}
+        />
+      )}
     </div>
   );
 }

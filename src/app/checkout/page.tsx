@@ -40,14 +40,17 @@ export default function CheckoutPage() {
     }
   }, [user, userLoading, router]);
 
-  // Redirect if cart is empty
+  // Redirect if cart is empty (but ignore success page)
   useEffect(() => {
-    if (items.length === 0) {
+    if (
+      items.length === 0 &&
+      !window.location.pathname.includes("/checkout/success")
+    ) {
       router.push("/cart");
     }
   }, [items, router]);
 
-  // Calculate totals
+  // Totals
   const subtotal = getCartTotal();
   const shipping = subtotal > 50 ? 0 : 5.99;
   const tax = subtotal * 0.1;
@@ -59,7 +62,8 @@ export default function CheckoutPage() {
     setLoading(true);
 
     try {
-      // Prepare order data
+      console.log("Submitting order...");
+
       const orderData = {
         items: items.map((item) => ({
           productId: item.product.id,
@@ -70,15 +74,28 @@ export default function CheckoutPage() {
         notes,
       };
 
-      const result = await OrderService.createOrder(orderData);
+      const result = await OrderService.createOrders(orderData);
+      console.log("Order result:", result);
 
       if (result.success) {
-        clearCart();
-        router.push(`/orders/${result.data.id}?success=true`);
+        const orders = result.data?.orders;
+
+        if (orders && orders.length > 0) {
+          const firstOrderId = orders[0]._id || orders[0].id;
+
+          // Redirect FIRST
+          router.replace(`/checkout/success?orderId=${firstOrderId}`);
+
+          // Clear cart AFTER navigation finishes
+          setTimeout(() => clearCart(), 300);
+        } else {
+          setError("Order created but unable to get order details");
+        }
       } else {
-        setError(result.error);
+        setError(result.error || "Failed to place order");
       }
     } catch (err) {
+      console.error(err);
       setError("Failed to place order. Please try again.");
     } finally {
       setLoading(false);
@@ -112,7 +129,6 @@ export default function CheckoutPage() {
                   setShippingAddress({ ...shippingAddress, fullName: value })
                 }
                 required
-                placeholder="John Doe"
               />
 
               <FormField
@@ -125,7 +141,6 @@ export default function CheckoutPage() {
                   })
                 }
                 required
-                placeholder="123 Main St"
               />
 
               <FormField
@@ -137,7 +152,6 @@ export default function CheckoutPage() {
                     addressLine2: value,
                   })
                 }
-                placeholder="Apt 4B"
               />
 
               <div className={styles.row}>
@@ -148,7 +162,6 @@ export default function CheckoutPage() {
                     setShippingAddress({ ...shippingAddress, city: value })
                   }
                   required
-                  placeholder="New York"
                 />
 
                 <FormField
@@ -158,7 +171,6 @@ export default function CheckoutPage() {
                     setShippingAddress({ ...shippingAddress, state: value })
                   }
                   required
-                  placeholder="NY"
                 />
               </div>
 
@@ -173,7 +185,6 @@ export default function CheckoutPage() {
                     })
                   }
                   required
-                  placeholder="10001"
                 />
 
                 <FormField
@@ -183,7 +194,6 @@ export default function CheckoutPage() {
                     setShippingAddress({ ...shippingAddress, country: value })
                   }
                   required
-                  placeholder="USA"
                 />
               </div>
 
@@ -195,7 +205,6 @@ export default function CheckoutPage() {
                   setShippingAddress({ ...shippingAddress, phone: value })
                 }
                 required
-                placeholder="(555) 123-4567"
               />
             </section>
 
@@ -225,7 +234,7 @@ export default function CheckoutPage() {
               </div>
             </section>
 
-            {/* Order Notes */}
+            {/* Notes */}
             <section className={styles.section}>
               <h2 className={styles.sectionTitle}>Order Notes (Optional)</h2>
               <textarea
@@ -240,12 +249,7 @@ export default function CheckoutPage() {
 
             {error && <p className={styles.error}>{error}</p>}
 
-            <LoadingButton
-              type="submit"
-              loading={loading}
-              disabled={loading}
-              variant="primary"
-            >
+            <LoadingButton type="submit" loading={loading}>
               Place Order - ${total.toFixed(2)}
             </LoadingButton>
           </form>

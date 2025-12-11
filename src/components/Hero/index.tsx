@@ -6,6 +6,12 @@ import styles from "@/components/Hero/Hero.module.css";
 
 const slides = [
   {
+    title: "What We're All About",
+    subtitle: "Understand Handcrafted Haven's vision",
+    cta: "Learn More",
+    link: "/about",
+  },
+  {
     title: "Latest Promotions",
     subtitle: "Discover our newest artisanal pieces",
     cta: "Shop Now",

@@ -1,51 +1,55 @@
 .formField {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-lg);
 }
 
 .label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-sm);
   font-weight: 500;
-  color: #333;
+  color: var(--night);
 }
 
 .required {
-  color: #e53e3e;
-  margin-left: 0.25rem;
+  color: var(--ou-crimson);
+  margin-left: var(--spacing-xs);
 }
 
 .input {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
   font-size: 1rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: all var(--transition-base);
+  color: var(--night);
+  background-color: var(--white);
 }
 
 .input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--aquamarine);
+  box-shadow: 0 0 0 3px rgba(112, 248, 186, 0.2);
 }
 
 .input:disabled {
-  background-color: #f3f4f6;
+  background-color: var(--bg-light-gray);
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .inputError {
-  border-color: #e53e3e;
+  border-color: var(--ou-crimson);
 }
 
 .inputError:focus {
-  border-color: #e53e3e;
-  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+  border-color: var(--ou-crimson);
+  box-shadow: 0 0 0 3px rgba(134, 9, 18, 0.15);
 }
 
 .error {
   display: block;
-  margin-top: 0.5rem;
-  color: #e53e3e;
+  margin-top: var(--spacing-sm);
+  color: var(--ou-crimson);
   font-size: 0.875rem;
+  font-weight: 500;
 }

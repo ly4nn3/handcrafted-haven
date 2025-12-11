@@ -47,8 +47,8 @@
 .searchButton {
   position: absolute;
   right: 0.5rem;
-  background-color: #3b82f6;
-  color: white;
+  background-color: var(--aquamarine);
+  color: black;
   border: none;
   border-radius: 0.375rem;
   padding: 0.625rem;
@@ -60,7 +60,7 @@
 }
 
 .searchButton:hover {
-  background-color: #2563eb;
+  background-color: var(--color-primary-hover);
 }
 
 @media (max-width: 768px) {
