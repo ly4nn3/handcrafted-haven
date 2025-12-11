@@ -109,4 +109,73 @@ export class OrderService {
       };
     }
   }
+
+  /**
+   * Get seller's orders
+   */
+  static async getSellerOrders(
+    page: number = 1,
+    limit: number = 10,
+    status?: string
+  ): Promise<ApiResponse<any>> {
+    try {
+      const query = new URLSearchParams({
+        page: String(page),
+        limit: String(limit),
+      });
+      if (status) query.append("status", status);
+
+      const response = await fetch(`${API_BASE}/seller?${query.toString()}`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return { success: false, error: "Network error. Please try again." };
+    }
+  }
+
+  /**
+   * Get seller stats
+   */
+  static async getSellerStats(): Promise<ApiResponse<any>> {
+    try {
+      const response = await fetch(`${API_BASE}/seller/stats`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return { success: false, error: "Network error. Please try again." };
+    }
+  }
+
+  /**
+   * Cancel an order
+   */
+  static async cancelOrder(
+    orderId: string,
+    reason?: string
+  ): Promise<ApiResponse<any>> {
+    try {
+      const response = await fetch(`${API_BASE}/${orderId}/cancel`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ reason }),
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return {
+        success: false,
+        error: "Network error. Please try again.",
+      };
+    }
+  }
 }
