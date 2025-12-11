@@ -178,4 +178,37 @@ export class OrderService {
       };
     }
   }
+
+  /**
+   * Get logged-in user's orders with optional status filter
+   */
+  static async getUserOrders(
+    page: number = 1,
+    limit: number = 10,
+    status?: string
+  ): Promise<ApiResponse<any>> {
+    try {
+      const query = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      });
+      if (status) query.append("status", status);
+
+      const response = await fetch(
+        `${API_BASE}/my-orders?${query.toString()}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return {
+        success: false,
+        error: "Network error. Please try again.",
+      };
+    }
+  }
 }
