@@ -92,7 +92,7 @@ async function handleGetProducts(req: NextRequest): Promise<NextResponse> {
  */
 async function handleCreateProduct(
   req: NextRequest,
-  context: { params: Record<string, string> }, // empty for routes with no params
+  context: { params: Promise<Record<string, string>> },
   user: DecodedToken
 ): Promise<NextResponse> {
   try {
@@ -135,5 +135,8 @@ async function handleCreateProduct(
 
 export const GET = withDB(handleGetProducts);
 export const POST = withDB(
-  withRole<{ params: Record<string, string> }>(["seller"], handleCreateProduct)
+  withRole<{ params: Promise<Record<string, string>> }>(
+    ["seller"],
+    handleCreateProduct
+  )
 );

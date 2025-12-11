@@ -11,7 +11,7 @@ import { UserResponse } from "@backend/types/api.types";
 
 async function handleGetMyProfile(
   req: NextRequest,
-  context: { params: Record<string, string> },
+  context: { params: Promise<Record<string, string>> }, // Changed to Promise
   user: DecodedToken
 ): Promise<NextResponse> {
   try {
@@ -35,7 +35,7 @@ async function handleGetMyProfile(
 
 async function handleUpdateMyProfile(
   req: NextRequest,
-  context: { params: Record<string, string> },
+  context: { params: Promise<Record<string, string>> },
   user: DecodedToken
 ): Promise<NextResponse> {
   try {

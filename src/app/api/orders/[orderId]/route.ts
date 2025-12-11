@@ -3,9 +3,13 @@ import { getOrderById } from "@backend/controllers/orderController";
 import { withAuth } from "@backend/middleware/auth";
 
 export const GET = withAuth(
-  async (req: NextRequest, context: { params: { orderId: string } }, user) => {
+  async (
+    req: NextRequest,
+    context: { params: Promise<{ orderId: string }> }, // Promise required in Next.js 16
+    user
+  ) => {
     try {
-      const { orderId } = context.params;
+      const { orderId } = await context.params; // Must await
 
       const order = await getOrderById(orderId, user.userId);
 

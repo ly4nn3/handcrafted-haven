@@ -12,10 +12,10 @@ import { ReviewResponse } from "@backend/types/review.types";
  */
 async function handleGetUserReview(
   req: NextRequest,
-  context: { params: { productId: string } },
+  context: { params: Promise<{ productId: string }> },
   user: DecodedToken
 ): Promise<NextResponse> {
-  const { productId } = context.params;
+  const { productId } = await context.params;
 
   try {
     const review = await getUserProductReview(user.userId, productId);
@@ -49,5 +49,5 @@ async function handleGetUserReview(
 
 // Vercel-safe export: explicit generic ensures params typing
 export const GET = withDB(
-  withAuth<{ params: { productId: string } }>(handleGetUserReview)
+  withAuth<{ params: Promise<{ productId: string }> }>(handleGetUserReview)
 );

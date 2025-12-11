@@ -6,7 +6,7 @@ import { DecodedToken } from "@backend/types/auth.types";
 export const GET = withAuth(
   async (
     req: NextRequest,
-    context: { params: Record<string, string> },
+    context: { params: Promise<Record<string, string>> },
     user: DecodedToken
   ) => {
     try {

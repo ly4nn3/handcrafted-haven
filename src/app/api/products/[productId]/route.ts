@@ -50,10 +50,10 @@ function buildProductResponse(product: any): ProductResponse {
  */
 async function handleGetProduct(
   req: NextRequest,
-  context: { params: { productId: string } }
+  context: { params: Promise<{ productId: string }> }
 ) {
   try {
-    const { productId } = context.params;
+    const { productId } = await context.params;
 
     const product = await getProductById(productId);
     if (!product) return errorResponse("Product not found");
@@ -70,11 +70,11 @@ async function handleGetProduct(
  */
 async function handleUpdateProduct(
   req: NextRequest,
-  context: { params: { productId: string } },
+  context: { params: Promise<{ productId: string }> },
   user: DecodedToken
 ) {
   try {
-    const { productId } = context.params;
+    const { productId } = await context.params;
 
     const body = await req.json();
     const validatedData = validateUpdateProduct(body);
@@ -96,11 +96,11 @@ async function handleUpdateProduct(
  */
 async function handleDeleteProduct(
   req: NextRequest,
-  context: { params: { productId: string } },
+  context: { params: Promise<{ productId: string }> },
   user: DecodedToken
 ) {
   try {
-    const { productId } = context.params;
+    const { productId } = await context.params;
 
     await deleteProduct(user.userId, productId);
 
@@ -114,9 +114,15 @@ async function handleDeleteProduct(
 export const GET = withDB(handleGetProduct);
 
 export const PUT = withDB(
-  withRole<{ params: { productId: string } }>(["seller"], handleUpdateProduct)
+  withRole<{ params: Promise<{ productId: string }> }>(
+    ["seller"],
+    handleUpdateProduct
+  )
 );
 
 export const DELETE = withDB(
-  withRole<{ params: { productId: string } }>(["seller"], handleDeleteProduct)
+  withRole<{ params: Promise<{ productId: string }> }>(
+    ["seller"],
+    handleDeleteProduct
+  )
 );

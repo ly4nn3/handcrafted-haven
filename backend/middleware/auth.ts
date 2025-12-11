@@ -22,8 +22,11 @@ export const getAuthUser = (req: NextRequest): DecodedToken => {
 
 /**
  * Authentication middleware - verifies JWT and attaches user to request
+ * Updated for Next.js 16 where params is a Promise
  */
-export function withAuth<Context extends { params: Record<string, string> }>(
+export function withAuth<
+  Context extends { params: Promise<Record<string, string>> }
+>(
   handler: (
     req: NextRequest,
     context: Context,
@@ -48,8 +51,11 @@ export function withAuth<Context extends { params: Record<string, string> }>(
 
 /**
  * Role-based authorization middleware
+ * Updated for Next.js 16 where params is a Promise
  */
-export function withRole<Context extends { params: Record<string, string> }>(
+export function withRole<
+  Context extends { params: Promise<Record<string, string>> }
+>(
   allowedRoles: ("user" | "seller")[],
   handler: (
     req: NextRequest,

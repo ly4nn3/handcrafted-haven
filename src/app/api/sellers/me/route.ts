@@ -11,7 +11,7 @@ import { SellerResponse } from "@backend/types/api.types";
 
 async function handleGetMySellerProfile(
   req: NextRequest,
-  context: { params: Record<string, string> },
+  context: { params: Promise<Record<string, string>> },
   user: DecodedToken
 ): Promise<NextResponse> {
   try {
@@ -44,7 +44,7 @@ async function handleGetMySellerProfile(
 
 async function handleUpdateMySellerProfile(
   req: NextRequest,
-  context: { params: Record<string, string> },
+  context: { params: Promise<Record<string, string>> },
   user: DecodedToken
 ): Promise<NextResponse> {
   try {
