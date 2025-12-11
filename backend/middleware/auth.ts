@@ -23,54 +23,53 @@ export const getAuthUser = (req: NextRequest): DecodedToken => {
 /**
  * Authentication middleware - verifies JWT and attaches user to request
  */
-export const withAuth = <T extends any[] = []>(
+export function withAuth<Context extends { params: Record<string, string> }>(
   handler: (
     req: NextRequest,
     user: DecodedToken,
-    ...args: T
+    context: Context
   ) => Promise<NextResponse>
-) => {
-  return async (req: NextRequest, ...args: T): Promise<NextResponse> => {
+) {
+  return async (req: NextRequest, context: Context): Promise<NextResponse> => {
     try {
       const user = getAuthUser(req);
-      return await handler(req, user, ...args);
+      return await handler(req, user, context);
     } catch (error) {
       if (error instanceof JWTError) {
         return NextResponse.json(
-          {
-            success: false,
-            error: error.message,
-          },
+          { success: false, error: error.message },
           { status: ErrorType.UNAUTHORIZED }
         );
       }
       return errorResponse(error, "Authentication failed");
     }
   };
-};
+}
 
 /**
  * Role-based authorization middleware
  */
-export const withRole = <T extends any[] = []>(
+export function withRole<Context extends { params: Record<string, string> }>(
   allowedRoles: ("user" | "seller")[],
   handler: (
     req: NextRequest,
     user: DecodedToken,
-    ...args: T
+    context: Context
   ) => Promise<NextResponse>
-) => {
-  return withAuth(async (req: NextRequest, user: DecodedToken, ...args: T) => {
-    if (!allowedRoles.includes(user.role)) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Access denied: insufficient permissions",
-        },
-        { status: ErrorType.FORBIDDEN }
-      );
-    }
+) {
+  return withAuth<Context>(
+    async (req: NextRequest, user: DecodedToken, context: Context) => {
+      if (!allowedRoles.includes(user.role)) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Access denied: insufficient permissions",
+          },
+          { status: ErrorType.FORBIDDEN }
+        );
+      }
 
-    return await handler(req, user, ...args);
-  });
-};
+      return await handler(req, user, context);
+    }
+  );
+}

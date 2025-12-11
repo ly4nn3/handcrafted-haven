@@ -6,6 +6,10 @@ import { successResponse, errorResponse } from "@backend/utils/apiResponse";
 import { DecodedToken } from "@backend/types/auth.types";
 import { ReviewResponse } from "@backend/types/review.types";
 
+/**
+ * GET /api/reviews/product/[productId]/user
+ * Get current user's review for a product
+ */
 async function handleGetUserReview(
   req: NextRequest,
   user: DecodedToken,
@@ -28,6 +32,7 @@ async function handleGetUserReview(
       helpfulCount: review.helpfulCount,
       createdAt: review.createdAt,
       updatedAt: review.updatedAt,
+      // Matches ReviewResponse.user type exactly
       user: (review.userId as any).firstname
         ? {
             firstname: (review.userId as any).firstname,
@@ -42,6 +47,7 @@ async function handleGetUserReview(
   }
 }
 
+// Vercel-safe export: explicit generic ensures params typing
 export const GET = withDB(
-  withAuth<[{ params: { productId: string } }]>(handleGetUserReview)
+  withAuth<{ params: { productId: string } }>(handleGetUserReview)
 );
