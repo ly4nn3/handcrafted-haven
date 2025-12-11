@@ -1,11 +1,11 @@
-"use client"; // keep this
+"use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import LoadingButton from "@/components/ui/LoadingButton";
 import styles from "./Success.module.css";
 
-export default function RegisterSuccessPage() {
+function RegisterSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [countdown, setCountdown] = useState(20);
@@ -76,5 +76,21 @@ export default function RegisterSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className={styles.successContainer}>
+          <div className={styles.successCard}>
+            <p>Loading...</p>
+          </div>
+        </div>
+      }
+    >
+      <RegisterSuccessContent />
+    </Suspense>
   );
 }
