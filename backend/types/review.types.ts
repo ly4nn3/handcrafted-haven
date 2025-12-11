@@ -20,6 +20,7 @@ export interface ReviewResponse {
   createdAt: Date;
   updatedAt: Date;
   user?: {
+    id: string;
     firstname: string;
     lastname: string;
   };

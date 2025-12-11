@@ -32,9 +32,9 @@ async function handleGetUserReview(
       helpfulCount: review.helpfulCount,
       createdAt: review.createdAt,
       updatedAt: review.updatedAt,
-      // Matches ReviewResponse.user type exactly
       user: (review.userId as any).firstname
         ? {
+            id: (review.userId as any)._id.toString(),
             firstname: (review.userId as any).firstname,
             lastname: (review.userId as any).lastname,
           }

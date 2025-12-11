@@ -13,11 +13,12 @@ import { UpdateReviewDTO } from "@backend/types/review.types";
  */
 export const GET = async (
   req: NextRequest,
-  context: { params: Promise<{ reviewId: string }> }
+  context: { params: { reviewId: string } }
 ) => {
   try {
-    const params = await context.params; // Await params
-    const review = await getReviewById(params.reviewId);
+    const { reviewId } = context.params;
+
+    const review = await getReviewById(reviewId);
 
     return NextResponse.json({
       success: true,
@@ -36,27 +37,18 @@ export const GET = async (
  * Update a review (user must own the review)
  */
 export const PUT = withAuth(
-  async (
-    req: NextRequest,
-    user,
-    context: { params: Promise<{ reviewId: string }> }
-  ) => {
+  async (req: NextRequest, user, context: { params: { reviewId: string } }) => {
     try {
-      const params = await context.params; // Await params
+      const { reviewId } = context.params;
       const body: UpdateReviewDTO = await req.json();
 
-      const updatedReview = await updateReview(
-        user.userId,
-        params.reviewId,
-        body
-      );
+      const updatedReview = await updateReview(user.userId, reviewId, body);
 
       return NextResponse.json({
         success: true,
         data: updatedReview,
       });
     } catch (error: any) {
-      console.error("Update error:", error.message);
       const statusCode = error.message.includes("Unauthorized") ? 403 : 400;
       return NextResponse.json(
         { success: false, error: error.message },
@@ -71,22 +63,17 @@ export const PUT = withAuth(
  * Delete a review (user must own the review)
  */
 export const DELETE = withAuth(
-  async (
-    req: NextRequest,
-    user,
-    context: { params: Promise<{ reviewId: string }> }
-  ) => {
+  async (req: NextRequest, user, context: { params: { reviewId: string } }) => {
     try {
-      const params = await context.params; // Await params
+      const { reviewId } = context.params;
 
-      await deleteReview(user.userId, params.reviewId);
+      await deleteReview(user.userId, reviewId);
 
       return NextResponse.json({
         success: true,
         data: null,
       });
     } catch (error: any) {
-      console.error("Delete error:", error.message);
       const statusCode = error.message.includes("Unauthorized") ? 403 : 400;
       return NextResponse.json(
         { success: false, error: error.message },
