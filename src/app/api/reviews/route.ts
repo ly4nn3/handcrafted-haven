@@ -16,6 +16,7 @@ async function handleCreateReview(
   user: DecodedToken
 ): Promise<NextResponse> {
   try {
+    const params = await context.params;
     const body = await req.json();
     const validatedData = validateCreateReview(body);
 
