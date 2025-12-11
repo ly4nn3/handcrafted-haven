@@ -20,8 +20,9 @@
 
 .brandName {
   font-family: var(--font-amarante);
-  font-size: 1.6rem;
+  font-size: 2rem;
   color: var(--night);
+  padding-right: 2rem;
 }
 
 .logo img {
@@ -41,6 +42,7 @@
   text-decoration: none;
   color: var(--night);
   font-weight: 500;
+  font-size: 1.2rem;
 }
 
 .navLinks a:hover {
@@ -72,7 +74,8 @@
 }
 
 .cta:hover {
-  background-color: var(--ou-crimson);
+  background-color: var(--aquamarine);
+  color: var(--text-primary);
 }
 
 /* -----------------------
@@ -215,7 +218,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  background-color: #ef4444;
+  background-color: var(--ou-crimson);
   color: white;
   font-size: 0.625rem;
   font-weight: 700;
@@ -267,19 +270,29 @@
     height: 80px;
   }
 
-  .navLinks,
-  .cta {
+  .cta,
+  .navLinks {
     display: none;
   }
 
   .hamburger {
     display: flex;
   }
+
+  .userSection {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  .cartButton {
+    display: flex;
+  }
 }
 
 @media (max-width: 480px) {
   .logo img {
-    width: 90px;
-    height: 30px;
+    height: 60px;
   }
 }

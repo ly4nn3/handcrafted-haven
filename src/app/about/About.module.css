@@ -1,0 +1,267 @@
+.aboutPage {
+  min-height: 100vh;
+}
+
+/* Hero Section */
+.hero {
+  background: var(--gradient-primary);
+  padding: 6rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--night);
+  opacity: 0.7;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.title {
+  font-family: var(--font-amarante);
+  font-size: 3rem;
+  color: var(--white);
+  margin: 0 0 1rem 0;
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  color: var(--aquamarine);
+  margin: 0;
+  font-weight: 300;
+}
+
+/* Content Section */
+.content {
+  padding: 4rem 0;
+}
+
+.section {
+  margin-bottom: 4rem;
+}
+
+.sectionTitle {
+  font-family: var(--font-amarante);
+  font-size: 2rem;
+  color: var(--night);
+  margin: 0 0 2rem 0;
+  text-align: center;
+}
+
+.textContent {
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--text-primary);
+}
+
+.textContent p {
+  margin-bottom: 1.5rem;
+}
+
+.textContent p:last-child {
+  margin-bottom: 0;
+}
+
+/* Values Grid */
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.valueCard {
+  background: var(--white);
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-base);
+}
+
+.valueCard:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.valueIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.valueTitle {
+  font-family: var(--font-lato);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--night);
+  margin: 0 0 1rem 0;
+}
+
+.valueText {
+  font-size: 1rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Steps Grid */
+.stepsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.step {
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.stepNumber {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  background: var(--aquamarine);
+  color: var(--night);
+  font-size: 1.5rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepTitle {
+  font-family: var(--font-lato);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--night);
+  margin: 0 0 0.75rem 0;
+}
+
+.stepText {
+  font-size: 1rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* CTA Section */
+.ctaSection {
+  background: var(--bg-light-gray);
+  padding: 4rem 2rem;
+  border-radius: var(--radius-xl);
+  text-align: center;
+  margin-top: 4rem;
+}
+
+.ctaTitle {
+  font-family: var(--font-amarante);
+  font-size: 2rem;
+  color: var(--night);
+  margin: 0 0 1rem 0;
+}
+
+.ctaText {
+  font-size: 1.125rem;
+  color: var(--text-primary);
+  margin: 0 0 2rem 0;
+}
+
+.ctaButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.primaryButton,
+.secondaryButton {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: all var(--transition-base);
+  display: inline-block;
+}
+
+.primaryButton {
+  background: var(--aquamarine);
+  color: var(--night);
+}
+
+.primaryButton:hover {
+  background: #5ee6a8;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.secondaryButton {
+  background: transparent;
+  color: var(--ou-crimson);
+  border: 2px solid var(--ou-crimson);
+}
+
+.secondaryButton:hover {
+  background: var(--ou-crimson);
+  color: var(--white);
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero {
+    padding: 4rem 1.5rem;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1.125rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.5rem;
+  }
+
+  .textContent {
+    font-size: 1rem;
+  }
+
+  .valuesGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .stepsGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .ctaButtons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+}

@@ -1,9 +1,6 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
 import { ProductResponse } from "@backend/types/product.types";
-import { useCart } from "@/app/context/CartContext";
 import styles from "./ProductCard.module.css";
 
 interface ProductCardProps {
@@ -11,76 +8,67 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const router = useRouter();
-  const { addToCart, isInCart } = useCart();
-
-  const handleCardClick = () => {
-    router.push(`/products/${product.id}`);
-  };
-
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click
-    addToCart(product, 1);
-  };
-
-  const productInCart = isInCart(product.id);
+  // Safe fallbacks
+  const sellerId = product.seller?.id || product.sellerId;
+  const shopName = product.seller?.shopName || "Unknown Shop";
+  const hasUserInfo =
+    product.seller?.user?.firstname && product.seller?.user?.lastname;
   const isOutOfStock = product.stock === 0;
 
   return (
-    <div className={styles.productCard} onClick={handleCardClick}>
-      <div className={styles.imageContainer}>
-        {product.images[0] ? (
+    <div className={styles.productCard}>
+      {/* Product Image - Clickable */}
+      <Link href={`/products/${product.id}`} className={styles.imageContainer}>
+        {product.images && product.images.length > 0 ? (
           <Image
             src={product.images[0]}
             alt={product.name}
             fill
             className={styles.image}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
           <div className={styles.noImage}>No Image</div>
         )}
-        {isOutOfStock && (
-          <span className={styles.outOfStock}>Out of Stock</span>
-        )}
-        {productInCart && !isOutOfStock && (
-          <span className={styles.inCartBadge}>In Cart</span>
-        )}
-      </div>
 
+        {/* Out of Stock Badge */}
+        {isOutOfStock && <div className={styles.outOfStock}>Out of Stock</div>}
+      </Link>
+
+      {/* Product Content */}
       <div className={styles.content}>
-        <h3 className={styles.name}>{product.name}</h3>
+        {/* Product Name - Clickable */}
+        <Link href={`/products/${product.id}`}>
+          <h3 className={styles.name}>{product.name}</h3>
+        </Link>
 
+        {/* Category */}
         <p className={styles.category}>{product.category}</p>
 
+        {/* Footer Section */}
         <div className={styles.footer}>
+          {/* Price */}
           <div className={styles.priceSection}>
-            <span className={styles.price}>${product.price.toFixed(2)}</span>
+            <p className={styles.price}>${product.price.toFixed(2)}</p>
           </div>
 
-          <div className={styles.rating}>
-            <span className={styles.stars}>
-              {"★".repeat(Math.round(product.averageRating))}
-              {"☆".repeat(5 - Math.round(product.averageRating))}
-            </span>
-            <span className={styles.reviewCount}>({product.totalReviews})</span>
-          </div>
+          {/* Rating */}
+          {product.totalReviews > 0 && (
+            <div className={styles.rating}>
+              <span className={styles.stars}>
+                {"★".repeat(Math.round(product.averageRating))}
+                {"☆".repeat(5 - Math.round(product.averageRating))}
+              </span>
+              <span className={styles.reviewCount}>
+                ({product.totalReviews})
+              </span>
+            </div>
+          )}
+
+          {/* Seller Info - Clickable */}
+          <p className={styles.seller}>
+            by <Link href={`/shop/${sellerId}`}>{shopName}</Link>
+          </p>
         </div>
-
-        {product.seller && (
-          <p className={styles.seller}>by {product.seller.shopName}</p>
-        )}
-
-        {/* Quick Add to Cart Button */}
-        {!isOutOfStock && (
-          <button
-            onClick={handleAddToCart}
-            className={styles.quickAddButton}
-            aria-label="Add to cart"
-          >
-            {productInCart ? "Add More" : "Add to Cart"}
-          </button>
-        )}
       </div>
     </div>
   );

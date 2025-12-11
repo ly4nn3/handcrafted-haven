@@ -95,6 +95,7 @@ export default function ProductDetailPage() {
 
   const isOutOfStock = product.stock === 0;
   const productInCart = isInCart(product.id);
+  const sellerId = product.seller?.id || product.sellerId;
 
   return (
     <div className={styles.productDetailPage}>
@@ -153,7 +154,7 @@ export default function ProductDetailPage() {
             {isOutOfStock ? (
               <span className={styles.outOfStock}>Out of Stock</span>
             ) : (
-              <span className={styles.inStock}>{product.stock} in stock</span>
+              <span>{product.stock} in stock</span>
             )}
           </div>
 
@@ -228,10 +229,7 @@ export default function ProductDetailPage() {
           {product.seller && (
             <div className={styles.sellerSection}>
               <h3 className={styles.sellerTitle}>Sold by</h3>
-              <Link
-                href={`/sellers/${product.sellerId}`}
-                className={styles.sellerLink}
-              >
+              <Link href={`/shop/${sellerId}`} className={styles.sellerLink}>
                 <div className={styles.sellerInfo}>
                   <div className={styles.sellerAvatar}>
                     {product.seller.shopName[0].toUpperCase()}
@@ -244,6 +242,18 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
               </Link>
+
+              {product.seller.user && (
+                <Link
+                  href={`/seller/${sellerId}`}
+                  className={styles.sellerProfileLink}
+                >
+                  <p className={styles.sellerProfileText}>
+                    About {product.seller.user.firstname}{" "}
+                    {product.seller.user.lastname} →
+                  </p>
+                </Link>
+              )}
             </div>
           )}
 

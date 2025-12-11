@@ -1,21 +1,15 @@
 import { ApiResponse } from "@/types/frontend.types";
-import {
-  OrderResponse,
-  CreateOrderDTO,
-  UpdateOrderStatusDTO,
-  PaginatedOrders,
-  OrderStats,
-} from "@/types/order.types";
+import { CreateOrderDTO } from "@/types/order.types";
 
 const API_BASE = "/api/orders";
 
 export class OrderService {
   /**
-   * Create a new order (checkout)
+   * Create new orders
    */
-  static async createOrder(
+  static async createOrders(
     orderData: CreateOrderDTO
-  ): Promise<ApiResponse<OrderResponse>> {
+  ): Promise<ApiResponse<any>> {
     try {
       const response = await fetch(API_BASE, {
         method: "POST",
@@ -35,53 +29,15 @@ export class OrderService {
   }
 
   /**
-   * Get user's orders (buyer view)
+   * Get user's orders
    */
-  static async getUserOrders(
+  static async getMyOrders(
     page: number = 1,
-    limit: number = 10,
-    status?: string
-  ): Promise<ApiResponse<PaginatedOrders>> {
+    limit: number = 10
+  ): Promise<ApiResponse<any>> {
     try {
-      const queryParams = new URLSearchParams();
-      queryParams.set("page", page.toString());
-      queryParams.set("limit", limit.toString());
-      if (status) queryParams.set("status", status);
-
       const response = await fetch(
-        `${API_BASE}/user?${queryParams.toString()}`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      return {
-        success: false,
-        error: "Network error. Please try again.",
-      };
-    }
-  }
-
-  /**
-   * Get seller's orders
-   */
-  static async getSellerOrders(
-    page: number = 1,
-    limit: number = 10,
-    status?: string
-  ): Promise<ApiResponse<PaginatedOrders>> {
-    try {
-      const queryParams = new URLSearchParams();
-      queryParams.set("page", page.toString());
-      queryParams.set("limit", limit.toString());
-      if (status) queryParams.set("status", status);
-
-      const response = await fetch(
-        `${API_BASE}/seller?${queryParams.toString()}`,
+        `${API_BASE}/my-orders?page=${page}&limit=${limit}`,
         {
           method: "GET",
           credentials: "include",
@@ -101,9 +57,14 @@ export class OrderService {
   /**
    * Get order by ID
    */
-  static async getOrderById(
-    orderId: string
-  ): Promise<ApiResponse<OrderResponse>> {
+  static async getOrderById(orderId: string | null): Promise<ApiResponse<any>> {
+    if (!orderId) {
+      return {
+        success: false,
+        error: "Invalid order ID",
+      };
+    }
+
     try {
       const response = await fetch(`${API_BASE}/${orderId}`, {
         method: "GET",
@@ -121,67 +82,26 @@ export class OrderService {
   }
 
   /**
-   * Update order status (seller only)
+   * Update order status
    */
   static async updateOrderStatus(
     orderId: string,
-    statusData: UpdateOrderStatusDTO
-  ): Promise<ApiResponse<OrderResponse>> {
+    data: {
+      status: string;
+      trackingNumber?: string;
+      note?: string;
+    }
+  ): Promise<ApiResponse<any>> {
     try {
       const response = await fetch(`${API_BASE}/${orderId}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(statusData),
+        body: JSON.stringify(data),
       });
 
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      return {
-        success: false,
-        error: "Network error. Please try again.",
-      };
-    }
-  }
-
-  /**
-   * Cancel order (buyer)
-   */
-  static async cancelOrder(
-    orderId: string,
-    reason?: string
-  ): Promise<ApiResponse<OrderResponse>> {
-    try {
-      const response = await fetch(`${API_BASE}/${orderId}/cancel`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ reason }),
-      });
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      return {
-        success: false,
-        error: "Network error. Please try again.",
-      };
-    }
-  }
-
-  /**
-   * Get seller order statistics
-   */
-  static async getSellerStats(): Promise<ApiResponse<OrderStats>> {
-    try {
-      const response = await fetch(`${API_BASE}/seller/stats`, {
-        method: "GET",
-        credentials: "include",
-      });
-
-      const data = await response.json();
-      return data;
+      const resData = await response.json();
+      return resData;
     } catch (error) {
       return {
         success: false,

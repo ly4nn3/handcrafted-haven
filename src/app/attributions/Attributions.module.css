@@ -1,6 +1,6 @@
 .main {
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 2rem;
 }
 
 .link {
@@ -9,5 +9,5 @@
 }
 
 .link:hover {
-  color: var(--aquamarine);
+  color: var(--text-light);
 }

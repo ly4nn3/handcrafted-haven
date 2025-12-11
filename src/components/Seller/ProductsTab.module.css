@@ -29,7 +29,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--text-primary);
   cursor: pointer;
 }
 
@@ -47,7 +47,7 @@
 
 .productCard {
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-medium);
   border-radius: 0.5rem;
   overflow: hidden;
   transition: box-shadow 0.2s;
@@ -85,7 +85,7 @@
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  background-color: #ef4444;
+  background-color: var(--ou-crimson);
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 0.25rem;
@@ -109,7 +109,7 @@
 
 .productCategory {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--text-primary);
   margin: 0 0 0.5rem 0;
 }
 
@@ -136,36 +136,37 @@
   padding: 0.75rem;
   border: none;
   background: none;
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .editButton {
-  color: #3b82f6;
+  color: #0044b3;
   border-right: 1px solid #e5e7eb;
 }
 
 .editButton:hover {
-  background-color: #eff6ff;
+  background-color: #4a91ee;
+  color: var(--text-primary);
 }
 
 .toggleButton {
-  color: #f59e0b;
+  color: var(--text-primary);
   border-right: 1px solid #e5e7eb;
 }
 
 .toggleButton:hover {
-  background-color: #fffbeb;
+  background-color: #ffde5a;
 }
 
 .deleteButton {
-  color: #ef4444;
+  color: var(--ou-crimson);
 }
 
 .deleteButton:hover:not(:disabled) {
-  background-color: #fef2f2;
+  background-color: #f5a7a7;
 }
 
 .deleteButton:disabled {

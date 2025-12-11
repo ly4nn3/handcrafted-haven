@@ -38,6 +38,12 @@ export interface ProductResponse {
     id: string;
     shopName: string;
     userId?: string;
+    user?: {
+      id: string;
+      firstname: string;
+      lastname: string;
+      email?: string;
+    };
   };
 }
 

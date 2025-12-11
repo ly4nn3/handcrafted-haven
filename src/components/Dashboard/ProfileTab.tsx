@@ -5,6 +5,7 @@ import { useUser } from "@/app/context/UserContext";
 import { UserService } from "@/lib/api/userService";
 import { UserProfile, SellerProfile } from "@/types/frontend.types";
 import LoadingButton from "@/components/ui/LoadingButton";
+import ProfileEditModal from "@/components/dashboard/ProfileEditModal";
 import styles from "./ProfileTab.module.css";
 
 interface ProfileTabProps {
@@ -19,6 +20,7 @@ export default function ProfileTab({ type }: ProfileTabProps) {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -50,6 +52,35 @@ export default function ProfileTab({ type }: ProfileTabProps) {
 
     fetchProfile();
   }, [type]);
+
+  const handleEditClick = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveProfile = async (updatedData: any) => {
+    try {
+      if (type === "user") {
+        const result = await UserService.updateMyProfile(updatedData);
+        if (result.success) {
+          setProfile(result.data as UserProfile);
+          setIsEditModalOpen(false);
+        } else {
+          throw new Error(result.error || "Failed to update profile");
+        }
+      } else {
+        const result = await UserService.updateMySellerProfile(updatedData);
+        if (result.success) {
+          setSellerProfile(result.data as SellerProfile);
+          setIsEditModalOpen(false);
+        } else {
+          throw new Error(result.error || "Failed to update seller profile");
+        }
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update profile");
+      throw err;
+    }
+  };
 
   if (loading) {
     return (
@@ -109,9 +140,20 @@ export default function ProfileTab({ type }: ProfileTabProps) {
           </div>
 
           <div className={styles.actions}>
-            <LoadingButton>Edit Profile</LoadingButton>
+            <LoadingButton onClick={handleEditClick}>
+              Edit Profile
+            </LoadingButton>
           </div>
         </div>
+
+        {isEditModalOpen && (
+          <ProfileEditModal
+            type="seller"
+            data={sellerProfile}
+            onClose={() => setIsEditModalOpen(false)}
+            onSave={handleSaveProfile}
+          />
+        )}
       </div>
     );
   }
@@ -150,9 +192,20 @@ export default function ProfileTab({ type }: ProfileTabProps) {
           </div>
 
           <div className={styles.actions}>
-            <LoadingButton>Edit Profile</LoadingButton>
+            <LoadingButton onClick={handleEditClick}>
+              Edit Profile
+            </LoadingButton>
           </div>
         </div>
+
+        {isEditModalOpen && (
+          <ProfileEditModal
+            type="user"
+            data={profile}
+            onClose={() => setIsEditModalOpen(false)}
+            onSave={handleSaveProfile}
+          />
+        )}
       </div>
     );
   }

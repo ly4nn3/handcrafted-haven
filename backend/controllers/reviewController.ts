@@ -227,3 +227,134 @@ export const markReviewHelpful = async (reviewId: string): Promise<IReview> => {
 
   return review;
 };
+
+/**
+ * Get all reviews by a user
+ */
+export const getUserReviews = async (
+  userId: string,
+  page: number = 1,
+  limit: number = 10
+) => {
+  const skip = (page - 1) * limit;
+
+  const [reviews, total] = await Promise.all([
+    Review.find({ userId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("userId", "firstname lastname")
+      .populate("productId", "name images"),
+    Review.countDocuments({ userId }),
+  ]);
+
+  // Transform to match expected response format
+  const transformedReviews = reviews.map((review) => ({
+    ...review.toObject(),
+    user: review.userId,
+    userId: (review.userId as any)._id.toString(),
+    productId: (review.productId as any)._id.toString(),
+    product: review.productId,
+    id: review._id.toString(),
+  }));
+
+  return {
+    reviews: transformedReviews,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
+/**
+ * Get all reviews for a seller's products
+ */
+export const getSellerProductReviews = async (
+  userId: string, // This is the User ID, not Seller ID
+  page: number = 1,
+  limit: number = 10
+) => {
+  console.log("=== GET SELLER PRODUCT REVIEWS CONTROLLER ===");
+  console.log("User ID:", userId);
+
+  const Product = (await import("@backend/models/Product")).default;
+  const Seller = (await import("@backend/models/Seller")).default;
+
+  const seller = await Seller.findOne({ userId });
+
+  if (!seller) {
+    console.log("No seller profile found for this user");
+    return {
+      reviews: [],
+      pagination: {
+        total: 0,
+        page,
+        limit,
+        totalPages: 0,
+      },
+    };
+  }
+
+  console.log("Seller found:", seller._id.toString());
+
+  const products = await Product.find({ sellerId: seller._id });
+  console.log("Products found:", products.length);
+
+  if (products.length > 0) {
+    console.log("Sample product:", products[0].name);
+  }
+
+  const productIds = products.map((p) => p._id);
+  console.log(
+    "Product IDs:",
+    productIds.map((id) => id.toString())
+  );
+
+  const skip = (page - 1) * limit;
+
+  const [reviews, total] = await Promise.all([
+    Review.find({ productId: { $in: productIds } })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("userId", "firstname lastname")
+      .populate("productId", "name images"),
+    Review.countDocuments({ productId: { $in: productIds } }),
+  ]);
+
+  console.log("Reviews found:", reviews.length);
+  console.log("Total review count:", total);
+
+  const transformedReviews = reviews.map((review) => {
+    const reviewObj = review.toObject() as any;
+
+    return {
+      ...reviewObj,
+      id: reviewObj._id.toString(),
+      _id: reviewObj._id.toString(),
+      user: reviewObj.userId,
+      userId:
+        typeof reviewObj.userId === "object"
+          ? reviewObj.userId._id.toString()
+          : reviewObj.userId.toString(),
+      product: reviewObj.productId,
+      productId:
+        typeof reviewObj.productId === "object"
+          ? reviewObj.productId._id.toString()
+          : reviewObj.productId.toString(),
+    };
+  });
+
+  return {
+    reviews: transformedReviews,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};

@@ -87,7 +87,14 @@ export const getProducts = async (
       .sort(sortQuery)
       .skip(skip)
       .limit(limit)
-      .populate("sellerId", "shopName userId"),
+      .populate({
+        path: "sellerId",
+        select: "shopName userId",
+        populate: {
+          path: "userId",
+          select: "firstname lastname email",
+        },
+      }),
     Product.countDocuments(query),
   ]);
 
@@ -106,10 +113,14 @@ export const getProducts = async (
  * Get single product by ID
  */
 export const getProductById = async (productId: string): Promise<IProduct> => {
-  const product = await Product.findById(productId).populate(
-    "sellerId",
-    "shopName userId"
-  );
+  const product = await Product.findById(productId).populate({
+    path: "sellerId",
+    select: "shopName userId",
+    populate: {
+      path: "userId",
+      select: "firstname lastname email",
+    },
+  });
 
   if (!product) {
     throw new Error("Product not found");
@@ -135,7 +146,16 @@ export const getProductsBySeller = async (
     query.isActive = true;
   }
 
-  return Product.find(query).sort({ createdAt: -1 });
+  return Product.find(query)
+    .sort({ createdAt: -1 })
+    .populate({
+      path: "sellerId",
+      select: "shopName userId",
+      populate: {
+        path: "userId",
+        select: "firstname lastname email",
+      },
+    });
 };
 
 /**
@@ -164,7 +184,15 @@ export const updateProduct = async (
   Object.assign(product, updates);
   await product.save();
 
-  return product;
+  // Return with populated data
+  return product.populate({
+    path: "sellerId",
+    select: "shopName userId",
+    populate: {
+      path: "userId",
+      select: "firstname lastname email",
+    },
+  });
 };
 
 /**

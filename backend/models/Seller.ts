@@ -31,7 +31,6 @@ const sellerSchema: Schema<ISeller> = new Schema(
   }
 );
 
-sellerSchema.index({ userId: 1 });
 sellerSchema.index({ shopName: 1 });
 
 const Seller: Model<ISeller> =

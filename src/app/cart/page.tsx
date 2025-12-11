@@ -9,18 +9,24 @@ import styles from "./Cart.module.css";
 
 export default function CartPage() {
   const router = useRouter();
-  const { items, updateQuantity, removeFromCart, clearCart } = useCart();
+  const { items, loading, updateQuantity, removeFromCart, clearCart } =
+    useCart();
 
   const handleCheckout = () => {
     router.push("/checkout");
   };
 
-  const handleClearCart = () => {
-    if (confirm("Are you sure you want to clear your cart?")) {
-      clearCart();
-    }
-  };
+  // Show loading state
+  if (loading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.spinner} />
+        <p>Loading your cart...</p>
+      </div>
+    );
+  }
 
+  // Show empty state
   if (items.length === 0) {
     return (
       <div className={styles.emptyCart}>
@@ -40,7 +46,7 @@ export default function CartPage() {
     <div className={styles.cartPage}>
       <div className={styles.header}>
         <h1 className={styles.title}>Shopping Cart</h1>
-        <button onClick={handleClearCart} className={styles.clearButton}>
+        <button onClick={clearCart} className={styles.clearButton}>
           Clear Cart
         </button>
       </div>

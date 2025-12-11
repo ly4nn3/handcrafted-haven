@@ -3,11 +3,12 @@
 import { useState } from "react";
 import DashboardTabs from "@/components/dashboard/DashboardTabs";
 import ProfileTab from "@/components/dashboard/ProfileTab";
+import ReviewsTab from "@/components/User/ReviewsTab";
 
 export default function UserDashboardPage() {
   const [activeTab, setActiveTab] = useState("Profile");
 
-  const tabs = ["Profile", "Purchases", "Reviews"];
+  const tabs = ["Profile", "Reviews", "Purchases"];
 
   return (
     <DashboardTabs
@@ -16,16 +17,11 @@ export default function UserDashboardPage() {
       setActiveTab={setActiveTab}
     >
       {activeTab === "Profile" && <ProfileTab type="user" />}
+      {activeTab === "Reviews" && <ReviewsTab />}
       {activeTab === "Purchases" && (
         <div style={{ padding: "2rem" }}>
           <h2>My Purchases</h2>
           <p>Your order history will appear here...</p>
-        </div>
-      )}
-      {activeTab === "Reviews" && (
-        <div style={{ padding: "2rem" }}>
-          <h2>My Reviews</h2>
-          <p>Reviews you've written will appear here...</p>
         </div>
       )}
     </DashboardTabs>

@@ -6,7 +6,7 @@ interface LoadingButtonProps {
   disabled?: boolean;
   type?: "button" | "submit" | "reset";
   onClick?: () => void;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "outline";
 }
 
 export default function LoadingButton({

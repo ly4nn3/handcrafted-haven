@@ -1,13 +1,13 @@
 .registerContainer {
-  max-width: 400px;
+  max-width: 500px;
   margin: 2rem auto;
-  padding: 1rem;
+  padding: 2rem;
   background-color: var(--white);
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
 
-.registerContainer h1 {
+.registerContainer h2 {
   margin-bottom: 1.5rem;
   text-align: center;
   color: var(--night);
@@ -19,15 +19,7 @@
   gap: 1rem;
 }
 
-.registerForm input {
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--french-gray);
-  border-radius: 6px;
-  font-size: 1rem;
-}
-
-.registerForm button,
-.successButton {
+.registerForm > button[type="submit"] {
   padding: 0.75rem 1rem;
   background-color: var(--aquamarine);
   color: var(--night);
@@ -37,9 +29,99 @@
   font-size: 1rem;
 }
 
-.registerForm button:hover,
-.successButton:hover {
+.registerForm > button[type="submit"]:hover:not(:disabled) {
   background-color: #5ae6a0;
+}
+
+.errorBanner {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background-color: #fee2e2;
+  color: var(--ou-crimson);
+  border: 1px solid var(--ou-crimson);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Role Selection */
+.roleOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: var(--bg-light-gray);
+  border-radius: 6px;
+}
+
+.roleLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.roleLabel input[type="radio"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+  accent-color: var(--aquamarine);
+}
+
+.roleLabel span {
+  color: var(--night);
+}
+
+/* Seller Fields */
+.sellerFields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #f0fdf4;
+  border: 1px solid var(--aquamarine);
+  border-radius: 6px;
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-weight: 500;
+  color: var(--night);
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.textarea {
+  padding: 0.75rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 100px;
+  transition: border-color 0.2s;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--aquamarine);
+  box-shadow: 0 0 0 3px rgba(112, 248, 186, 0.2);
+}
+
+.textarea:disabled {
+  background-color: var(--bg-light-gray);
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .bottomText {
@@ -51,10 +133,4 @@
 .bottomText a {
   color: var(--ou-crimson);
   text-decoration: underline;
-}
-
-.successMessage {
-  margin-top: 1rem;
-  font-size: 1.1rem;
-  line-height: 1.6;
 }

@@ -51,4 +51,6 @@ export interface SellerProfile {
   bannerImage?: string;
   user?: UserProfile;
   products?: string[];
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
 }

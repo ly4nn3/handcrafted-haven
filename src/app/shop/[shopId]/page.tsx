@@ -1,19 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { SellerService } from "@/lib/api/sellerService";
 import { ProductService } from "@/lib/api/productService";
 import { SellerProfile } from "@/types/frontend.types";
 import { ProductResponse } from "@backend/types/product.types";
 import ProductCard from "@/components/products/ProductCard";
 import LoadingButton from "@/components/ui/LoadingButton";
-import styles from "./SellerPage.module.css";
+import styles from "./ShopPage.module.css";
 
-export default function SellerPage() {
+export default function ShopPage() {
   const params = useParams();
-  const sellerId = params.sellerId as string;
+  const router = useRouter();
+  const shopId = params.shopId as string;
 
   const [seller, setSeller] = useState<SellerProfile | null>(null);
   const [products, setProducts] = useState<ProductResponse[]>([]);
@@ -22,16 +24,16 @@ export default function SellerPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchSeller();
+    fetchShop();
     fetchProducts();
-  }, [sellerId]);
+  }, [shopId]);
 
-  const fetchSeller = async () => {
+  const fetchShop = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const result = await SellerService.getSellerById(sellerId);
+      const result = await SellerService.getSellerById(shopId);
 
       if (result.success) {
         setSeller(result.data as SellerProfile);
@@ -39,7 +41,7 @@ export default function SellerPage() {
         setError(result.error);
       }
     } catch (err) {
-      setError("Failed to load seller profile");
+      setError("Failed to load shop");
     } finally {
       setLoading(false);
     }
@@ -50,7 +52,7 @@ export default function SellerPage() {
 
     try {
       const result = await ProductService.getProducts({
-        sellerId: sellerId,
+        sellerId: shopId,
       });
 
       if (result.success) {
@@ -67,7 +69,7 @@ export default function SellerPage() {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.spinner} />
-        <p>Loading seller profile...</p>
+        <p>Loading shop...</p>
       </div>
     );
   }
@@ -75,17 +77,17 @@ export default function SellerPage() {
   if (error || !seller) {
     return (
       <div className={styles.errorContainer}>
-        <h2>Seller Not Found</h2>
-        <p>{error || "The seller you're looking for doesn't exist."}</p>
-        <LoadingButton onClick={() => window.history.back()}>
-          Go Back
+        <h2>Shop Not Found</h2>
+        <p>{error || "The shop you're looking for doesn't exist."}</p>
+        <LoadingButton onClick={() => router.push("/shop")}>
+          Browse All Products
         </LoadingButton>
       </div>
     );
   }
 
   return (
-    <div className={styles.sellerPageContainer}>
+    <div className={styles.shopPageContainer}>
       {/* Banner */}
       {seller.bannerImage && (
         <div className={styles.bannerContainer}>
@@ -107,9 +109,35 @@ export default function SellerPage() {
         </div>
         <div className={styles.shopInfo}>
           <h1 className={styles.shopName}>{seller.shopName}</h1>
-          <p className={styles.sellerName}>
-            by {seller.user?.firstname} {seller.user?.lastname}
-          </p>
+
+          {/* Link to seller profile */}
+          <Link href={`/seller/${shopId}`} className={styles.sellerLink}>
+            <p className={styles.sellerName}>
+              by {seller.user?.firstname} {seller.user?.lastname}
+            </p>
+          </Link>
+        </div>
+
+        <div className={styles.shopActions}>
+          <LoadingButton variant="outline" onClick={() => router.push("/shop")}>
+            Browse All Shops
+          </LoadingButton>
+        </div>
+      </div>
+
+      {/* Shop Stats */}
+      <div className={styles.statsContainer}>
+        <div className={styles.statCard}>
+          <span className={styles.statNumber}>{products.length}</span>
+          <span className={styles.statLabel}>Products</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statNumber}>
+            {seller.createdAt
+              ? new Date(seller.createdAt).getFullYear()
+              : "N/A"}
+          </span>
+          <span className={styles.statLabel}>Since</span>
         </div>
       </div>
 
@@ -117,22 +145,27 @@ export default function SellerPage() {
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>About This Shop</h2>
         <p className={styles.description}>
-          {seller.description || "No description available."}
+          {seller.description ||
+            "Welcome to our shop! We create handcrafted products with care."}
         </p>
       </section>
 
       {/* Products */}
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Products ({products.length})</h2>
+
         {productsLoading ? (
           <div className={styles.loadingProducts}>
             <div className={styles.spinner} />
             <p>Loading products...</p>
           </div>
         ) : products.length === 0 ? (
-          <p className={styles.emptyState}>
-            This seller hasn't listed any products yet.
-          </p>
+          <div className={styles.emptyState}>
+            <p>This shop hasn't listed any products yet.</p>
+            <LoadingButton onClick={() => router.push("/shop")}>
+              Browse Other Shops
+            </LoadingButton>
+          </div>
         ) : (
           <div className={styles.productsGrid}>
             {products.map((product) => (

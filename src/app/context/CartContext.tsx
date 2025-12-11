@@ -17,6 +17,7 @@ export interface CartItem {
 
 interface CartContextType {
   items: CartItem[];
+  loading: boolean;
   addToCart: (product: ProductResponse, quantity: number) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
@@ -28,6 +29,7 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType>({
   items: [],
+  loading: true,
   addToCart: () => {},
   removeFromCart: () => {},
   updateQuantity: () => {},
@@ -37,14 +39,21 @@ const CartContext = createContext<CartContextType>({
   isInCart: () => false,
 });
 
-export const useCart = () => useContext(CartContext);
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error("useCart must be used within CartProvider");
+  }
+  return context;
+};
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
-  const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Load cart from localStorage on mount
   useEffect(() => {
+    setLoading(true);
     const storedCart = safeGetLocalStorage("cart");
     if (storedCart) {
       try {
@@ -54,15 +63,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         console.error("Failed to parse stored cart:", error);
       }
     }
-    setMounted(true);
+    setLoading(false);
   }, []);
 
-  // Save cart to localStorage whenever it changes
+  // Save cart to localStorage whenever it changes (but not during initial load)
   useEffect(() => {
-    if (mounted) {
+    if (!loading) {
       safeSetLocalStorage("cart", JSON.stringify(items));
     }
-  }, [items, mounted]);
+  }, [items, loading]);
 
   const addToCart = useCallback(
     (product: ProductResponse, quantity: number) => {
@@ -140,6 +149,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     <CartContext.Provider
       value={{
         items,
+        loading,
         addToCart,
         removeFromCart,
         updateQuantity,

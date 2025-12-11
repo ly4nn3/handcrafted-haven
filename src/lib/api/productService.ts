@@ -144,9 +144,18 @@ export class ProductService {
         body: JSON.stringify(updates),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        return {
+          success: false,
+          error: errorData.error || "Failed to update product",
+        };
+      }
+
       const data = await response.json();
       return data;
     } catch (error) {
+      console.error("Update product error:", error);
       return {
         success: false,
         error: "Network error. Please try again.",
