@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import DashboardTabs from "@/components/dashboard/DashboardTabs";
 import ProfileTab from "@/components/seller/ProfileTab";
 import ProductsTab from "@/components/seller/ProductsTab";
 import ReviewsTab from "@/components/seller/ReviewsTab";
 
-export default function SellerDashboardPage() {
+function SellerDashboardContent() {
   const searchParams = useSearchParams();
   const tabFromUrl = searchParams.get("tab");
 
@@ -32,5 +32,13 @@ export default function SellerDashboardPage() {
       {activeTab === "Products" && <ProductsTab />}
       {activeTab === "Reviews" && <ReviewsTab />}
     </DashboardTabs>
+  );
+}
+
+export default function SellerDashboardPage() {
+  return (
+    <Suspense fallback={<div>Loading dashboard...</div>}>
+      <SellerDashboardContent />
+    </Suspense>
   );
 }

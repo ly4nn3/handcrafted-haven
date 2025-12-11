@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ProductService, GetProductsParams } from "@/lib/api/productService";
 import {
@@ -13,7 +13,7 @@ import ProductGrid from "@/components/products/ProductGrid";
 import Pagination from "@/components/products/Pagination";
 import styles from "./Shop.module.css";
 
-export default function ShopPage() {
+function ShopContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -187,5 +187,21 @@ export default function ShopPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className={styles.shopPage}>
+          <div className={styles.header}>
+            <h1 className={styles.title}>Loading...</h1>
+          </div>
+        </div>
+      }
+    >
+      <ShopContent />
+    </Suspense>
   );
 }

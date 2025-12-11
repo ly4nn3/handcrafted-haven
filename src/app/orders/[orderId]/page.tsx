@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@/app/context/UserContext";
 import { OrderService } from "@/lib/api/orderService";
@@ -10,11 +10,7 @@ import OrderTimeline from "@/components/orders/OrderTimeline";
 import LoadingButton from "@/components/ui/LoadingButton";
 import styles from "./OrderDetails.module.css";
 
-export default function OrderDetailsPage({
-  params,
-}: {
-  params: { orderId: string };
-}) {
+function OrderDetailsContent({ orderId }: { orderId: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, loading: userLoading } = useUser();
@@ -31,9 +27,9 @@ export default function OrderDetailsPage({
   // Redirect if not logged in
   useEffect(() => {
     if (!userLoading && !user) {
-      router.push(`/login?redirect=/orders/${params.orderId}`);
+      router.push(`/login?redirect=/orders/${orderId}`);
     }
-  }, [user, userLoading, router, params.orderId]);
+  }, [user, userLoading, router, orderId]);
 
   // Fetch order details
   useEffect(() => {
@@ -44,7 +40,7 @@ export default function OrderDetailsPage({
       setError("");
 
       try {
-        const result = await OrderService.getOrderById(params.orderId);
+        const result = await OrderService.getOrderById(orderId);
 
         if (result.success) {
           setOrder(result.data);
@@ -59,7 +55,7 @@ export default function OrderDetailsPage({
     };
 
     fetchOrder();
-  }, [user, params.orderId]);
+  }, [user, orderId]);
 
   const handleCancelOrder = async () => {
     if (!order) return;
@@ -252,5 +248,23 @@ export default function OrderDetailsPage({
         </div>
       </div>
     </div>
+  );
+}
+
+export default function OrderDetailsPage({
+  params,
+}: {
+  params: { orderId: string };
+}) {
+  return (
+    <Suspense
+      fallback={
+        <div className={styles.loading}>
+          <p>Loading order details...</p>
+        </div>
+      }
+    >
+      <OrderDetailsContent orderId={params.orderId} />
+    </Suspense>
   );
 }
