@@ -10,10 +10,9 @@ import mongoose from "mongoose";
  */
 async function handleGetPublicSeller(
   req: NextRequest,
-  context: { params: { sellerId: string } }
+  context: { params: Promise<{ sellerId: string }> }
 ): Promise<NextResponse> {
   try {
-    // Next.js 16+: context.params may be a Promise
     const params = await context.params;
     const sellerId = params.sellerId;
 
